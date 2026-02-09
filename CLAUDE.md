@@ -17,3 +17,6 @@
   - `refactor:` for code refactoring
   - `test:` for test additions or modifications
   - `chore:` for maintenance tasks
+
+## Workflow
+- After completing each task from DESIGN.md, create a commit with those changes
