@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #111;
+  --color-surface: #161616;
+  --color-border: #282828;
+  --color-text: #e5e5e5;
+  --color-accent: #d4643b;
+  --color-muted: #888;
+
+  --font-mono: "DM Mono", ui-monospace, monospace;
+}
+
+html {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
