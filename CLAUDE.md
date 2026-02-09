@@ -8,6 +8,10 @@
 - Follow the implementation plan (DESIGN.md or similar) for project structure and architecture decisions
 - Consult the plan when making technical decisions
 
+## React Components
+- Reuse existing common components when possible
+- When creating new components, consider if they can be abstracted for use in multiple places
+
 ## Commit Messages
 - Use conventional commit prefixes for all commits:
   - `feat:` for new features
