@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useStore } from "../store";
-import { Button, Card, CheckmarkIcon, GroupedList } from "./common";
+import { Button, Card, GroupedList } from "./common";
+import { CheckmarkIcon } from "./icons";
 
 export default function IngredientList() {
   const { state, actions } = useStore();

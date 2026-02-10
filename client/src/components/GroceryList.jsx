@@ -1,13 +1,14 @@
 import { useMemo } from "react";
 import { useStore } from "../store";
-import { Button, Card, CheckmarkIcon, EmptyState, GroupedList } from "./common";
+import { Button, Card, EmptyState, GroupedList } from "./common";
+import { CheckmarkIcon, DeleteIcon } from "./icons";
 
 export default function GroceryList() {
   const { state, actions } = useStore();
 
   const neededItems = useMemo(
     () => state.ingredients.filter((i) => i.needed),
-    [state.ingredients]
+    [state.ingredients],
   );
 
   if (neededItems.length === 0) {
@@ -40,19 +41,7 @@ export default function GroceryList() {
             onClick={() => actions.toggleNeeded(ingredient.id)}
             aria-label="Remove from grocery list"
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+            <DeleteIcon />
           </Button>
         </Card>
       )}

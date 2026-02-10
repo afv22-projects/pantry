@@ -39,8 +39,7 @@ export default function RecipeEditor({
     const input = ingredientInput.toLowerCase();
     return state.ingredients
       .filter(
-        (i) =>
-          i.name.toLowerCase().includes(input) && !ingredientIds.has(i.id),
+        (i) => i.name.toLowerCase().includes(input) && !ingredientIds.has(i.id),
       )
       .slice(0, 5);
   }, [ingredientInput, state.ingredients, ingredientIds]);
@@ -86,11 +85,7 @@ export default function RecipeEditor({
           />
         ) : (
           <h2 className="text-2xl font-normal text-text mb-6 lowercase">
-            {name || (
-              <span className="text-muted">
-                {namePlaceholder}
-              </span>
-            )}
+            {name || <span className="text-muted">{namePlaceholder}</span>}
           </h2>
         )}
       </section>
@@ -129,9 +124,9 @@ export default function RecipeEditor({
                   onClick={
                     showNeededIndicator && onIngredientToggleNeeded
                       ? (e) => {
-                        e.stopPropagation();
-                        onIngredientToggleNeeded(ingredient.id);
-                      }
+                          e.stopPropagation();
+                          onIngredientToggleNeeded(ingredient.id);
+                        }
                       : undefined
                   }
                   className="inline-flex items-center gap-1 bg-background border border-border rounded px-2 py-1 text-sm text-text lowercase cursor-pointer"

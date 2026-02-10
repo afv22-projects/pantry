@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useStore } from "../store";
 import CategoryInput from "./CategoryInput";
-import { Button, Card, EmptyState } from "./common";
+import { Button, Card, EmptyState, BackLink } from "./common";
 
 export default function IngredientDetail() {
   const { id } = useParams();
@@ -42,12 +42,7 @@ export default function IngredientDetail() {
 
   return (
     <div>
-      <Link
-        to="/ingredients"
-        className="inline-flex items-center gap-1 text-muted font-mono text-sm mb-4 hover:text-text transition-colors"
-      >
-        <span>&larr;</span> back
-      </Link>
+      <BackLink to="/ingredients" />
 
       <h2 className="text-2xl font-normal text-text mb-6 lowercase">
         {ingredient.name}

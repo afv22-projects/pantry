@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useStore } from "../store";
 import RecipeEditor from "./RecipeEditor.jsx";
-import { Button } from "./common";
+import { Button, BackLink } from "./common";
 import { parseTags } from "../utils/tags.js";
 
 export default function RecipeDetail() {
@@ -86,12 +86,7 @@ export default function RecipeDetail() {
 
   return (
     <div>
-      <Link
-        to="/recipes"
-        className="inline-flex items-center gap-1 text-muted font-mono text-sm mb-4 hover:text-text transition-colors"
-      >
-        <span>&larr;</span> back
-      </Link>
+      <BackLink to="/recipes" />
 
       <RecipeEditor
         name={recipe.name}
@@ -107,7 +102,6 @@ export default function RecipeDetail() {
         nameEditable={true}
       />
 
-      {/* Delete Button */}
       <Button variant="danger" onClick={handleDelete}>
         delete recipe
       </Button>
