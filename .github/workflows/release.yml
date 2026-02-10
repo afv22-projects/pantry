@@ -12,9 +12,6 @@ permissions:
 jobs:
   release-please:
     uses: afv22-projects/.github/.github/workflows/release-please.yml@main
-    with:
-      release-type: node
-      path: client
 
   build:
     needs: release-please
@@ -40,11 +37,11 @@ jobs:
         working-directory: client
 
       - name: Create tarball
-        run: tar -czvf pantry-${{ needs.release-please.outputs.tag_name }}.tar.gz dist
+        run: tar -czvf pantry-${{ needs.release-please.outputs.tag-name }}.tar.gz dist
         working-directory: client
 
       - name: Upload release asset
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ needs.release-please.outputs.tag_name }}
-          files: client/pantry-${{ needs.release-please.outputs.tag_name }}.tar.gz
+          tag_name: ${{ needs.release-please.outputs.tag-name }}
+          files: client/pantry-${{ needs.release-please.outputs.tag-name }}.tar.gz
