@@ -3,6 +3,8 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { useStore } from "../store";
 import CategoryInput from "./CategoryInput";
 import Button from "./Button.jsx";
+import Card from "./common/Card.jsx";
+import EmptyState from "./common/EmptyState.jsx";
 
 export default function IngredientDetail() {
   const { id } = useParams();
@@ -77,19 +79,13 @@ export default function IngredientDetail() {
           Used In
         </h3>
         {recipesUsingIngredient.length === 0 ? (
-          <p className="text-muted font-mono text-sm">
-            not used in any recipes yet
-          </p>
+          <EmptyState message="not used in any recipes yet" />
         ) : (
           <div className="space-y-2">
             {recipesUsingIngredient.map((recipe) => (
-              <Link
-                key={recipe.id}
-                to={`/recipes/${recipe.id}`}
-                className="block bg-surface border border-border rounded-lg px-4 py-4 hover:border-muted transition-colors"
-              >
+              <Card key={recipe.id} as={Link} to={`/recipes/${recipe.id}`}>
                 <span className="text-text lowercase">{recipe.name}</span>
-              </Link>
+              </Card>
             ))}
           </div>
         )}

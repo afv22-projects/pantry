@@ -4,6 +4,8 @@ import RecipeCard from "./RecipeCard.jsx";
 import TagFilter from "./TagFilter.jsx";
 import RecipeForm from "./RecipeForm.jsx";
 import Button from "./Button.jsx";
+import EmptyState from "./common/EmptyState.jsx";
+import { parseTags } from "../utils/tags.js";
 
 export default function RecipesPage() {
   const { state } = useStore();
@@ -14,13 +16,9 @@ export default function RecipesPage() {
   const allTags = useMemo(() => {
     const tagSet = new Set();
     state.recipes.forEach((recipe) => {
-      if (recipe.tags) {
-        recipe.tags
-          .split(",")
-          .map((t) => t.trim().toLowerCase())
-          .filter(Boolean)
-          .forEach((tag) => tagSet.add(tag));
-      }
+      parseTags(recipe.tags)
+        .map((t) => t.toLowerCase())
+        .forEach((tag) => tagSet.add(tag));
     });
     return Array.from(tagSet).sort();
   }, [state.recipes]);
@@ -36,12 +34,7 @@ export default function RecipesPage() {
     if (selectedTags.length === 0) return state.recipes;
 
     return state.recipes.filter((recipe) => {
-      const recipeTags = recipe.tags
-        ? recipe.tags
-            .split(",")
-            .map((t) => t.trim().toLowerCase())
-            .filter(Boolean)
-        : [];
+      const recipeTags = parseTags(recipe.tags).map((t) => t.toLowerCase());
       return selectedTags.every((tag) => recipeTags.includes(tag));
     });
   }, [state.recipes, selectedTags]);
@@ -78,11 +71,14 @@ export default function RecipesPage() {
       </div>
 
       {filteredRecipes.length === 0 && (
-        <p className="text-muted font-mono text-sm text-center py-12">
-          {state.recipes.length === 0
-            ? "no recipes yet"
-            : "no recipes match the selected tags"}
-        </p>
+        <EmptyState
+          message={
+            state.recipes.length === 0
+              ? "no recipes yet"
+              : "no recipes match the selected tags"
+          }
+          centered
+        />
       )}
 
       {/* Add Recipe Button */}

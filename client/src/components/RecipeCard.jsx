@@ -1,18 +1,12 @@
 import { Link } from "react-router-dom";
+import Card from "./common/Card.jsx";
+import { parseTags } from "../utils/tags.js";
 
 export default function RecipeCard({ recipe, ingredientCount }) {
-  const tags = recipe.tags
-    ? recipe.tags
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean)
-    : [];
+  const tags = parseTags(recipe.tags);
 
   return (
-    <Link
-      to={`/recipes/${recipe.id}`}
-      className="block bg-surface border border-border rounded-lg p-5 hover:border-muted transition-colors"
-    >
+    <Card as={Link} to={`/recipes/${recipe.id}`} className="p-5">
       <h3 className="text-lg font-normal text-text mb-2 lowercase">
         {recipe.name}
       </h3>
@@ -31,6 +25,6 @@ export default function RecipeCard({ recipe, ingredientCount }) {
           ))}
         </div>
       )}
-    </Link>
+    </Card>
   );
 }
