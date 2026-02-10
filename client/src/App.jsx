@@ -50,13 +50,21 @@ function AppContent() {
   );
 }
 
+// Derive the base path from the URL so the app can be served from any subdirectory
+// without knowing the path at build time. When served at example.com/pantry/,
+// this returns "/pantry". When served at the root, this returns "".
+function getBasePath() {
+  const base = new URL(document.baseURI).pathname.replace(/\/+$/, '');
+  return base;
+}
+
 function App() {
   const handleStateChange = useCallback((state) => {
     saveState(state);
   }, []);
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={getBasePath()}>
       <StoreProvider onStateChange={handleStateChange}>
         <AppContent />
       </StoreProvider>
