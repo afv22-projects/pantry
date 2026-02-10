@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { useStore } from "../store";
 import TagInput from "./TagInput.jsx";
 import ChipInput from "./ChipInput.jsx";
-import Button from "./Button.jsx";
+import { Button } from "./common";
 
 export default function RecipeEditor({
   name,
