@@ -3,9 +3,10 @@ import { useMemo } from "react";
 export default function GroupedList({
   items,
   getCategory,
-  sortItems = (a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
+  sortItems = (a, b) =>
+    a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
   renderItem,
-  emptyMessage = "no items to display"
+  emptyMessage = "no items to display",
 }) {
   const groupedItems = useMemo(() => {
     const groups = {};
@@ -37,11 +38,7 @@ export default function GroupedList({
   }, [items, getCategory, sortItems]);
 
   if (items.length === 0) {
-    return (
-      <div className="text-muted font-mono text-sm">
-        {emptyMessage}
-      </div>
-    );
+    return <div className="text-muted font-mono text-sm">{emptyMessage}</div>;
   }
 
   return (
@@ -51,9 +48,7 @@ export default function GroupedList({
           <h3 className="font-mono text-[11px] text-muted uppercase tracking-wider mb-3">
             {category}
           </h3>
-          <div className="space-y-2">
-            {items.map(renderItem)}
-          </div>
+          <div className="space-y-2">{items.map(renderItem)}</div>
         </section>
       ))}
     </div>

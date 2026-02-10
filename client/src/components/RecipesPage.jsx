@@ -80,12 +80,7 @@ export default function RecipesPage() {
         />
       )}
 
-      {/* Add Recipe Button */}
-      <Button variant="fab" onClick={() => setShowForm(true)}>
-        +
-      </Button>
-
-      {/* Recipe Form Modal */}
+      <Button variant="fab" onClick={() => setShowForm(true)}>+</Button>
       {showForm && <RecipeForm onClose={() => setShowForm(false)} />}
     </div>
   );
