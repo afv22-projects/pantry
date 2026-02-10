@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.0](https://github.com/afv22-projects/pantry/compare/client-v1.0.0...client-v1.1.0) (2026-02-10)
+
+
+### Features
+
+* add logo to header and favicon ([39f483b](https://github.com/afv22-projects/pantry/commit/39f483bcf25e51f6f23d619ce3169399630221dd))
+* support serving app from any subdirectory ([35f4034](https://github.com/afv22-projects/pantry/commit/35f4034dba32663ad19e0fead8c53c478f2acd9a))
+
+
+### Bug Fixes
+
+* use &lt;base href&gt; to resolve subdirectory path stacking issue ([5490ff8](https://github.com/afv22-projects/pantry/commit/5490ff8e6115a1ac1b9e59db487fb1f47c6481bf))
+
 ## 1.0.0 (2026-02-10)
 
 
