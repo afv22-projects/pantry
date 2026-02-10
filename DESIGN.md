@@ -124,18 +124,20 @@ Full UI working with no server. All state in React, persisted to IndexedDB.
    - On release created: checkout → setup Node 20 → `npm ci` → `npm run build` → tarball `dist/` → upload to GitHub release
    - Adapted from reflect repo workflow, only change is tarball name (`pantry-{tag}.tar.gz`) and the build output being a Vite `dist/`
 
-3. **State management (`state.js`)**
-   - `useReducer` with actions: `INIT`, `ADD_RECIPE`, `UPDATE_RECIPE`, `DELETE_RECIPE`, `TOGGLE_NEEDED`, `ADD_INGREDIENT`, `REMOVE_INGREDIENT_FROM_RECIPE`
-   - Context provider wrapping `App`
+3. **State management (`state.jsx`)** ✅
+   - `useReducer` with actions: `INIT`, `ADD_RECIPE`, `UPDATE_RECIPE`, `DELETE_RECIPE`, `TOGGLE_NEEDED`, `ADD_INGREDIENT`, `ADD_INGREDIENT_TO_RECIPE`, `REMOVE_INGREDIENT_FROM_RECIPE`
+   - `StoreProvider` context wrapper with `onStateChange` callback for persistence
    - Reducer shape: `{ recipes: [], ingredients: [], recipeIngredients: [], loaded: false }`
-   - Custom hook `useStore()` for consuming components
+   - Custom hook `useStore()` returns `{ state, actions }`
 
-4. **IndexedDB layer (`db.js`)**
+4. **IndexedDB layer (`db.js`)** ✅
    - Database: `pantry-db`
    - Object stores: `recipes`, `ingredients`, `recipeIngredients`
-   - Expose `getAll`, `put`, `delete` per store
-   - On app init: load all stores → dispatch `INIT` with data
-   - On every dispatch: side-effect writes changed records to IndexedDB (wrapper around dispatch or effect in provider)
+   - Expose `getAll`, `put`, `del`, `clear` per store
+   - `loadAll()` loads all stores at once for hydration
+   - `saveState(state)` persists full state in a single transaction
+   - On app init: `loadAll()` → dispatch `INIT` with data
+   - On state change: `StoreProvider.onStateChange` callback triggers `saveState()`
 
 5. **Tab layout + routing (`App.jsx`)**
    - Three tabs: `/recipes`, `/ingredients`, `/grocery`

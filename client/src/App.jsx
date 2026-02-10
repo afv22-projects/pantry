@@ -1,7 +1,15 @@
+import { useEffect, useCallback } from "react";
 import { StoreProvider, useStore } from "./state.jsx";
+import { loadAll, saveState } from "./db.js";
 
 function AppContent() {
-  const { state } = useStore();
+  const { state, actions } = useStore();
+
+  useEffect(() => {
+    loadAll().then(({ recipes, ingredients, recipeIngredients }) => {
+      actions.init(recipes, ingredients, recipeIngredients);
+    });
+  }, [actions]);
 
   if (!state.loaded) {
     return (
@@ -20,8 +28,12 @@ function AppContent() {
 }
 
 function App() {
+  const handleStateChange = useCallback((state) => {
+    saveState(state);
+  }, []);
+
   return (
-    <StoreProvider>
+    <StoreProvider onStateChange={handleStateChange}>
       <AppContent />
     </StoreProvider>
   );
