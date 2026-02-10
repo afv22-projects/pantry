@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/afv22-projects/pantry/compare/client-v1.1.1...client-v1.1.2) (2026-02-10)
+
+
+### Bug Fixes
+
+* add mobile browser compatibility for state management ([80b65f2](https://github.com/afv22-projects/pantry/commit/80b65f26ee1b0263ad0ac580664ed78a07daffc0))
+
 ## [1.1.1](https://github.com/afv22-projects/pantry/compare/client-v1.1.0...client-v1.1.1) (2026-02-10)
 
 
