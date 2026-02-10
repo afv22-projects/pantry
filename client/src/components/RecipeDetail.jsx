@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useStore } from "../store";
 import TagInput from "./TagInput.jsx";
+import ChipInput from "./ChipInput.jsx";
 
 export default function RecipeDetail() {
   const { id } = useParams();
@@ -70,55 +71,45 @@ export default function RecipeDetail() {
     actions.toggleNeeded(ingredientId);
   };
 
-  const handleAddIngredient = (ingredient) => {
-    actions.addIngredientToRecipe(id, ingredient.id);
-    setIngredientInput("");
+  const handleIngredientsChange = (newIngredients) => {
+    const newIds = new Set(newIngredients.map((i) => i.id));
+    const oldIds = new Set(ingredients.map((i) => i.id));
+
+    // Find added ingredients
+    for (const ingredient of newIngredients) {
+      if (!oldIds.has(ingredient.id)) {
+        actions.addIngredientToRecipe(id, ingredient.id);
+      }
+    }
+
+    // Find removed ingredients
+    for (const ingredient of ingredients) {
+      if (!newIds.has(ingredient.id)) {
+        actions.removeIngredientFromRecipe(id, ingredient.id);
+      }
+    }
   };
 
-  const handleCreateAndAddIngredient = () => {
-    const trimmed = ingredientInput.trim();
-    if (!trimmed) return;
-
+  const handleCreateIngredient = (inputValue) => {
     // Check if ingredient already exists
     const existing = state.ingredients.find(
-      (i) => i.name.toLowerCase() === trimmed.toLowerCase(),
+      (i) => i.name.toLowerCase() === inputValue.toLowerCase(),
     );
 
     if (existing) {
       if (!recipeIngredientIds.includes(existing.id)) {
-        actions.addIngredientToRecipe(id, existing.id);
+        return existing;
       }
-    } else {
-      // Create new ingredient and add to recipe
-      const newIngredient = actions.addIngredient(trimmed);
-      actions.addIngredientToRecipe(id, newIngredient.id);
+      return null;
     }
-    setIngredientInput("");
-  };
 
-  const handleRemoveIngredient = (ingredientId) => {
-    actions.removeIngredientFromRecipe(id, ingredientId);
-  };
-
-  const handleIngredientKeyDown = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      if (ingredientSuggestions.length > 0) {
-        handleAddIngredient(ingredientSuggestions[0]);
-      } else if (ingredientInput.trim()) {
-        handleCreateAndAddIngredient();
-      }
-    }
+    // Create new ingredient
+    return actions.addIngredient(inputValue);
   };
 
   const handleSaveNotes = () => {
     actions.updateRecipe(id, { notes });
     setIsEditingNotes(false);
-  };
-
-  const handleSaveTags = () => {
-    actions.updateRecipe(id, { tags: editingTags.join(",") });
-    setIsEditingTags(false);
   };
 
   const handleDelete = () => {
@@ -149,93 +140,43 @@ export default function RecipeDetail() {
           Ingredients
         </h3>
         {isEditingIngredients ? (
-          <div>
-            {/* Selected ingredients */}
-            {ingredients.length > 0 && (
-              <div className="flex flex-wrap gap-2 mb-3">
-                {ingredients.map((ingredient) => (
-                  <span
-                    key={ingredient.id}
-                    className="inline-flex items-center gap-1 bg-surface border border-border rounded px-2 py-1 text-sm text-text lowercase"
-                  >
-                    {ingredient.name}
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveIngredient(ingredient.id)}
-                      className="text-muted hover:text-text ml-1"
-                    >
-                      &times;
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
-
-            {/* Input with autocomplete */}
-            <div className="relative">
-              <input
-                type="text"
-                value={ingredientInput}
-                onChange={(e) => setIngredientInput(e.target.value)}
-                onKeyDown={handleIngredientKeyDown}
-                className="w-full bg-surface border border-border rounded-lg px-3 py-2.5 text-text focus:outline-none focus:border-muted"
-                placeholder="type ingredient name, press enter to add"
-                autoFocus
-              />
-
-              {/* Suggestions dropdown */}
-              {ingredientSuggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-surface border border-border rounded-lg overflow-hidden z-10">
-                  {ingredientSuggestions.map((ingredient) => (
-                    <button
-                      key={ingredient.id}
-                      type="button"
-                      onClick={() => handleAddIngredient(ingredient)}
-                      className="w-full text-left px-3 py-2 text-text text-sm hover:bg-border/50 lowercase"
-                    >
-                      {ingredient.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="flex gap-2 mt-2">
-              <button
-                onClick={() => setIsEditingIngredients(false)}
-                className="font-mono text-[12px] px-3 py-1.5 bg-accent text-white rounded"
-              >
-                done
-              </button>
-            </div>
-          </div>
+          <ChipInput
+            items={ingredients}
+            onChange={handleIngredientsChange}
+            suggestions={ingredientSuggestions}
+            getKey={(i) => i.id}
+            getLabel={(i) => i.name}
+            onCreateNew={handleCreateIngredient}
+            placeholder="type ingredient name, press enter to add"
+            onInputChange={setIngredientInput}
+            onClose={() => setIsEditingIngredients(false)}
+            autoFocus
+          />
         ) : (
           <div
             onClick={() => setIsEditingIngredients(true)}
-            className="cursor-pointer"
+            className="flex flex-wrap gap-2 cursor-pointer border border-border rounded-lg px-3 py-2.5 transition-colors duration-500 hover:border-muted"
           >
             {ingredients.length === 0 ? (
               <p className="text-muted font-mono text-sm">
                 click to add ingredients
               </p>
             ) : (
-              <div className="flex flex-wrap gap-2">
-                {ingredients.map((ingredient) => (
-                  <button
-                    key={ingredient.id}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleToggleNeeded(ingredient.id);
-                    }}
-                    className="flex items-center gap-2 bg-surface border border-border rounded-full px-4 py-2 text-text text-sm lowercase transition-colors hover:border-muted"
-                  >
-                    {ingredient.needed && (
-                      <span className="w-2 h-2 rounded-full bg-accent" />
-                    )}
-                    {ingredient.name}
-                  </button>
-                ))}
-              </div>
+              ingredients.map((ingredient) => (
+                <span
+                  key={ingredient.id}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleToggleNeeded(ingredient.id);
+                  }}
+                  className="inline-flex items-center gap-1 bg-background border border-border rounded px-2 py-1 text-sm text-text lowercase cursor-pointer"
+                >
+                  {ingredient.needed && (
+                    <span className="w-2 h-2 rounded-full bg-accent" />
+                  )}
+                  {ingredient.name}
+                </span>
+              ))
             )}
           </div>
         )}
@@ -293,48 +234,32 @@ export default function RecipeDetail() {
           Tags
         </h3>
         {isEditingTags ? (
-          <div>
-            <TagInput
-              selectedTags={editingTags}
-              onChange={setEditingTags}
-            />
-            <div className="flex gap-2 mt-2">
-              <button
-                onClick={handleSaveTags}
-                className="font-mono text-[12px] px-3 py-1.5 bg-accent text-white rounded"
-              >
-                save
-              </button>
-              <button
-                onClick={() => {
-                  setEditingTags(parsedTags);
-                  setIsEditingTags(false);
-                }}
-                className="font-mono text-[12px] px-3 py-1.5 text-muted hover:text-text"
-              >
-                cancel
-              </button>
-            </div>
-          </div>
+          <TagInput
+            selectedTags={editingTags}
+            onChange={(newTags) => {
+              setEditingTags(newTags);
+              actions.updateRecipe(id, { tags: newTags.join(",") });
+            }}
+            onClose={() => setIsEditingTags(false)}
+            autoFocus
+          />
         ) : (
           <div
             onClick={() => {
               setEditingTags(parsedTags);
               setIsEditingTags(true);
             }}
-            className="cursor-pointer"
+            className="flex flex-wrap gap-2 cursor-pointer border border-border rounded-lg px-3 py-2.5 transition-colors duration-500 hover:border-muted"
           >
             {tagList.length > 0 ? (
-              <div className="flex flex-wrap gap-1.5">
-                {tagList.map((tag) => (
-                  <span
-                    key={tag}
-                    className="font-mono text-[11px] text-muted border border-border rounded px-1.5 py-0.5 lowercase"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
+              tagList.map((tag) => (
+                <span
+                  key={tag}
+                  className="inline-flex items-center gap-1 bg-background border border-border rounded px-2 py-1 text-sm text-text lowercase"
+                >
+                  {tag}
+                </span>
+              ))
             ) : (
               <p className="text-muted font-mono text-sm">click to add tags</p>
             )}
