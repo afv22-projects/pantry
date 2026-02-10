@@ -2,9 +2,7 @@ import { useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useStore } from "../store";
 import CategoryInput from "./CategoryInput";
-import Button from "./Button.jsx";
-import Card from "./common/Card.jsx";
-import EmptyState from "./common/EmptyState.jsx";
+import { Button, Card, EmptyState } from "./common";
 
 export default function IngredientDetail() {
   const { id } = useParams();

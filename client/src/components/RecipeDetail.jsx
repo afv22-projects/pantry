@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useStore } from "../store";
 import RecipeEditor from "./RecipeEditor.jsx";
-import Button from "./Button.jsx";
+import { Button } from "./common";
 import { parseTags } from "../utils/tags.js";
 
 export default function RecipeDetail() {

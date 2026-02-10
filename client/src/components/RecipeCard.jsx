@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import Card from "./common/Card.jsx";
+import { Card } from "./common";
 import { parseTags } from "../utils/tags.js";
 
 export default function RecipeCard({ recipe, ingredientCount }) {

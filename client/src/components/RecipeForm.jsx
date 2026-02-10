@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStore } from "../store";
 import RecipeEditor from "./RecipeEditor.jsx";
-import Button from "./Button.jsx";
+import { Button } from "./common";
 
 export default function RecipeForm({ onClose }) {
   const navigate = useNavigate();

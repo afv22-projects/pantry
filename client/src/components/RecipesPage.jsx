@@ -3,8 +3,7 @@ import { useStore } from "../store";
 import RecipeCard from "./RecipeCard.jsx";
 import TagFilter from "./TagFilter.jsx";
 import RecipeForm from "./RecipeForm.jsx";
-import Button from "./Button.jsx";
-import EmptyState from "./common/EmptyState.jsx";
+import { Button, EmptyState } from "./common";
 import { parseTags } from "../utils/tags.js";
 
 export default function RecipesPage() {
