@@ -6,10 +6,7 @@ import RecipesPage from "./components/RecipesPage.jsx";
 import RecipeDetail from "./components/RecipeDetail.jsx";
 import IngredientList from "./components/IngredientList.jsx";
 import IngredientDetail from "./components/IngredientDetail.jsx";
-
-function GroceryPage() {
-  return <div className="text-muted">grocery list placeholder</div>;
-}
+import GroceryList from "./components/GroceryList.jsx";
 
 function AppContent() {
   const { state, actions } = useStore();
@@ -45,7 +42,7 @@ function AppContent() {
             <Route path="/recipes/:id" element={<RecipeDetail />} />
             <Route path="/ingredients" element={<IngredientList />} />
             <Route path="/ingredients/:id" element={<IngredientDetail />} />
-            <Route path="/grocery" element={<GroceryPage />} />
+            <Route path="/grocery" element={<GroceryList />} />
           </Routes>
         </main>
       </div>
