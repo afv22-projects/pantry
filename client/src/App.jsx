@@ -2,14 +2,8 @@ import { useEffect, useCallback } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { StoreProvider, useStore, loadAll, saveState } from "./store";
 import TabBar from "./components/TabBar.jsx";
-
-function RecipesPage() {
-  return <div className="text-muted">recipes list placeholder</div>;
-}
-
-function RecipeDetailPage() {
-  return <div className="text-muted">recipe detail placeholder</div>;
-}
+import RecipesPage from "./components/RecipesPage.jsx";
+import RecipeDetail from "./components/RecipeDetail.jsx";
 
 function IngredientsPage() {
   return <div className="text-muted">ingredients list placeholder</div>;
@@ -54,7 +48,7 @@ function AppContent() {
           <Routes>
             <Route path="/" element={<Navigate to="/recipes" replace />} />
             <Route path="/recipes" element={<RecipesPage />} />
-            <Route path="/recipes/:id" element={<RecipeDetailPage />} />
+            <Route path="/recipes/:id" element={<RecipeDetail />} />
             <Route path="/ingredients" element={<IngredientsPage />} />
             <Route path="/ingredients/:id" element={<IngredientDetailPage />} />
             <Route path="/grocery" element={<GroceryPage />} />
