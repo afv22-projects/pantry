@@ -3,6 +3,7 @@ import { useStore } from "../store";
 import RecipeCard from "./RecipeCard.jsx";
 import TagFilter from "./TagFilter.jsx";
 import RecipeForm from "./RecipeForm.jsx";
+import Button from "./Button.jsx";
 
 export default function RecipesPage() {
   const { state } = useStore();
@@ -85,12 +86,9 @@ export default function RecipesPage() {
       )}
 
       {/* Add Recipe Button */}
-      <button
-        onClick={() => setShowForm(true)}
-        className="fixed bottom-6 right-6 bg-accent text-white w-14 h-14 rounded-full text-2xl font-light shadow-lg hover:bg-accent/90 transition-colors"
-      >
+      <Button variant="fab" onClick={() => setShowForm(true)}>
         +
-      </button>
+      </Button>
 
       {/* Recipe Form Modal */}
       {showForm && <RecipeForm onClose={() => setShowForm(false)} />}

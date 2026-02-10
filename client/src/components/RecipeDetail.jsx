@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useStore } from "../store";
 import RecipeEditor from "./RecipeEditor.jsx";
+import Button from "./Button.jsx";
 
 export default function RecipeDetail() {
   const { id } = useParams();
@@ -111,12 +112,9 @@ export default function RecipeDetail() {
       />
 
       {/* Delete Button */}
-      <button
-        onClick={handleDelete}
-        className="font-mono text-[12px] text-muted hover:text-red-400 transition-colors"
-      >
+      <Button variant="danger" onClick={handleDelete}>
         delete recipe
-      </button>
+      </Button>
     </div>
   );
 }

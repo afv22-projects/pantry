@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useStore } from "../store";
+import Button from "./Button.jsx";
 
 export default function IngredientList() {
   const { state, actions } = useStore();
@@ -65,13 +66,10 @@ export default function IngredientList() {
                 className="flex items-center justify-between bg-surface border border-border rounded-lg px-4 py-4 hover:border-muted transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  <button
+                  <Button
+                    variant="checkbox"
+                    active={ingredient.needed}
                     onClick={(e) => handleToggleNeeded(e, ingredient.id)}
-                    className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${
-                      ingredient.needed
-                        ? "bg-accent border-accent"
-                        : "border-muted hover:border-text"
-                    }`}
                   >
                     {ingredient.needed && (
                       <svg
@@ -88,7 +86,7 @@ export default function IngredientList() {
                         />
                       </svg>
                     )}
-                  </button>
+                  </Button>
                   <span className="text-text lowercase">{ingredient.name}</span>
                 </div>
                 <span className="text-muted">&rarr;</span>

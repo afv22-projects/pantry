@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStore } from "../store";
 import RecipeEditor from "./RecipeEditor.jsx";
+import Button from "./Button.jsx";
 
 export default function RecipeForm({ onClose }) {
   const navigate = useNavigate();
@@ -52,20 +53,16 @@ export default function RecipeForm({ onClose }) {
 
           {/* Actions */}
           <div className="flex gap-3">
-            <button
+            <Button
               type="submit"
               disabled={!name.trim()}
-              className="flex-1 bg-accent text-white font-mono text-[13px] py-2.5 rounded-lg hover:bg-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1"
             >
               create recipe
-            </button>
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2.5 font-mono text-[13px] text-muted hover:text-text transition-colors"
-            >
+            </Button>
+            <Button variant="secondary" onClick={onClose}>
               cancel
-            </button>
+            </Button>
           </div>
         </form>
       </div>

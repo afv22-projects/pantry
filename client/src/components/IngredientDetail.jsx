@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useStore } from "../store";
 import CategoryInput from "./CategoryInput";
+import Button from "./Button.jsx";
 
 export default function IngredientDetail() {
   const { id } = useParams();
@@ -52,16 +53,14 @@ export default function IngredientDetail() {
         {ingredient.name}
       </h2>
 
-      <button
+      <Button
+        variant="toggle"
+        active={ingredient.needed}
         onClick={handleToggleNeeded}
-        className={`font-mono text-[14px] px-4 py-3 rounded border transition-colors mb-6 ${
-          ingredient.needed
-            ? "bg-accent text-white border-accent"
-            : "text-muted border-border hover:border-muted"
-        }`}
+        className="mb-6"
       >
         {ingredient.needed ? "marked as needed" : "+ mark as needed"}
-      </button>
+      </Button>
 
       <section className="mb-8">
         <h3 className="font-mono text-[11px] text-muted uppercase tracking-wider mb-3">
@@ -96,17 +95,18 @@ export default function IngredientDetail() {
         )}
       </section>
 
-      <button
+      <Button
+        variant="danger"
         onClick={() => {
           if (window.confirm("delete this ingredient?")) {
             actions.deleteIngredient(id);
             navigate("/ingredients");
           }
         }}
-        className="font-mono text-[12px] text-muted hover:text-red-400 transition-colors mt-8"
+        className="mt-8"
       >
         delete ingredient
-      </button>
+      </Button>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useStore } from "../store";
 import TagInput from "./TagInput.jsx";
 import ChipInput from "./ChipInput.jsx";
+import Button from "./Button.jsx";
 
 export default function RecipeEditor({
   name,
@@ -162,21 +163,19 @@ export default function RecipeEditor({
               autoFocus
             />
             <div className="flex gap-2 mt-2">
-              <button
-                onClick={handleSaveNotes}
-                className="font-mono text-[12px] px-3 py-1.5 bg-accent text-white rounded"
-              >
+              <Button variant="primary" size="sm" onClick={handleSaveNotes}>
                 save
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick={() => {
                   setEditingNotes(notes);
                   setIsEditingNotes(false);
                 }}
-                className="font-mono text-[12px] px-3 py-1.5 text-muted hover:text-text"
               >
                 cancel
-              </button>
+              </Button>
             </div>
           </div>
         ) : (

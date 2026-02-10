@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useStore } from "../store";
+import Button from "./Button.jsx";
 
 export default function GroceryList() {
   const { state, actions } = useStore();
@@ -58,9 +59,10 @@ export default function GroceryList() {
                 className="flex items-center justify-between bg-surface border border-border rounded-lg px-4 py-4"
               >
                 <div className="flex items-center gap-3">
-                  <button
+                  <Button
+                    variant="checkbox"
+                    active={true}
                     onClick={() => actions.toggleNeeded(ingredient.id)}
-                    className="w-5 h-5 rounded border flex items-center justify-center transition-colors bg-accent border-accent"
                   >
                     <svg
                       className="w-3 h-3 text-white"
@@ -75,12 +77,12 @@ export default function GroceryList() {
                         d="M5 13l4 4L19 7"
                       />
                     </svg>
-                  </button>
+                  </Button>
                   <span className="text-text lowercase">{ingredient.name}</span>
                 </div>
-                <button
+                <Button
+                  variant="icon"
                   onClick={() => actions.toggleNeeded(ingredient.id)}
-                  className="text-muted hover:text-text transition-colors p-1"
                   aria-label="Remove from grocery list"
                 >
                   <svg
@@ -96,7 +98,7 @@ export default function GroceryList() {
                       d="M6 18L18 6M6 6l12 12"
                     />
                   </svg>
-                </button>
+                </Button>
               </div>
             ))}
           </div>
