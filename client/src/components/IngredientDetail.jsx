@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useStore } from "../store";
+import CategoryInput from "./CategoryInput";
 
 export default function IngredientDetail() {
   const { id } = useParams();
@@ -34,6 +35,10 @@ export default function IngredientDetail() {
     actions.toggleNeeded(id);
   };
 
+  const handleCategoryChange = (category) => {
+    actions.updateIngredient(id, { category: category.toLowerCase() });
+  };
+
   return (
     <div>
       <Link
@@ -49,7 +54,7 @@ export default function IngredientDetail() {
 
       <button
         onClick={handleToggleNeeded}
-        className={`font-mono text-[14px] px-4 py-3 rounded border transition-colors mb-8 ${
+        className={`font-mono text-[14px] px-4 py-3 rounded border transition-colors mb-6 ${
           ingredient.needed
             ? "bg-accent text-white border-accent"
             : "text-muted border-border hover:border-muted"
@@ -57,6 +62,16 @@ export default function IngredientDetail() {
       >
         {ingredient.needed ? "marked as needed" : "+ mark as needed"}
       </button>
+
+      <section className="mb-8">
+        <h3 className="font-mono text-[11px] text-muted uppercase tracking-wider mb-3">
+          Category
+        </h3>
+        <CategoryInput
+          value={ingredient.category || ""}
+          onChange={handleCategoryChange}
+        />
+      </section>
 
       <section>
         <h3 className="font-mono text-[11px] text-muted uppercase tracking-wider mb-3">

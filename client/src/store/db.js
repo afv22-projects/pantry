@@ -1,10 +1,10 @@
 import { openDB } from "idb";
 
 const DB_NAME = "pantry-db";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 const dbPromise = openDB(DB_NAME, DB_VERSION, {
-  upgrade(db) {
+  upgrade(db, oldVersion, _newVersion, transaction) {
     if (!db.objectStoreNames.contains("recipes")) {
       db.createObjectStore("recipes", { keyPath: "id" });
     }
@@ -14,6 +14,20 @@ const dbPromise = openDB(DB_NAME, DB_VERSION, {
     if (!db.objectStoreNames.contains("recipeIngredients")) {
       db.createObjectStore("recipeIngredients", {
         keyPath: ["recipe_id", "ingredient_id"],
+      });
+    }
+
+    // Migration: Add category field to existing ingredients
+    if (oldVersion < 2) {
+      const ingredientStore = transaction.objectStore("ingredients");
+      ingredientStore.openCursor().then(function migrateCursor(cursor) {
+        if (!cursor) return;
+        const ingredient = cursor.value;
+        if (ingredient.category === undefined) {
+          ingredient.category = "";
+          cursor.update(ingredient);
+        }
+        return cursor.continue().then(migrateCursor);
       });
     }
   },

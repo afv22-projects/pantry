@@ -54,6 +54,16 @@ function reducer(state, action) {
         ),
       };
 
+    case "UPDATE_INGREDIENT":
+      return {
+        ...state,
+        ingredients: state.ingredients.map((i) =>
+          i.id === action.id
+            ? { ...i, ...action.updates, updated_at: action.timestamp }
+            : i,
+        ),
+      };
+
     case "ADD_INGREDIENT": {
       // Check for existing ingredient with same name (case-insensitive)
       const existing = state.ingredients.find(
@@ -144,16 +154,25 @@ function createActions(dispatch) {
         timestamp: new Date().toISOString(),
       }),
 
-    addIngredient: (name, needed = false) => {
+    addIngredient: (name, needed = false, category = "") => {
       const ingredient = {
         id: crypto.randomUUID(),
         name: name.toLowerCase(),
         needed,
+        category: category.toLowerCase(),
         updated_at: new Date().toISOString(),
       };
       dispatch({ type: "ADD_INGREDIENT", ingredient });
       return ingredient;
     },
+
+    updateIngredient: (id, updates) =>
+      dispatch({
+        type: "UPDATE_INGREDIENT",
+        id,
+        updates,
+        timestamp: new Date().toISOString(),
+      }),
 
     addIngredientToRecipe: (recipeId, ingredientId) =>
       dispatch({
