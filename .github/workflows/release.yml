@@ -14,6 +14,7 @@ jobs:
     uses: afv22-projects/.github/.github/workflows/release-please.yml@main
     with:
       release-type: node
+      path: client
 
   build:
     needs: release-please
