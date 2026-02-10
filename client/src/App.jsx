@@ -7,6 +7,7 @@ import RecipeDetail from "./components/RecipeDetail.jsx";
 import IngredientList from "./components/IngredientList.jsx";
 import IngredientDetail from "./components/IngredientDetail.jsx";
 import GroceryList from "./components/GroceryList.jsx";
+import { LogoIcon } from "./components/icons";
 
 function AppContent() {
   const { state, actions } = useStore();
@@ -30,13 +31,7 @@ function AppContent() {
       <div className="max-w-160 mx-auto px-4">
         <header className="sticky top-0 bg-bg z-10 pt-12 pb-2 border-b border-border">
           <h1 className="text-[28px] font-light tracking-wide mb-5 text-text lowercase flex items-center gap-3">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="translate-y-1">
-              <path d="M12 8 L10 8 L10 24 L12 24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" />
-              <path d="M20 8 L22 8 L22 24 L20 24" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" />
-              <circle cx="16" cy="12" r="1.5" fill="currentColor" />
-              <circle cx="16" cy="16" r="1.5" fill="currentColor" />
-              <circle cx="16" cy="20" r="1.5" fill="currentColor" />
-            </svg>
+            <LogoIcon classname="translate-y-1" />
             pantry
           </h1>
           <TabBar />
@@ -61,7 +56,7 @@ function AppContent() {
 // without knowing the path at build time. When served at example.com/pantry/,
 // this returns "/pantry". When served at the root, this returns "".
 function getBasePath() {
-  const base = new URL(document.baseURI).pathname.replace(/\/+$/, '');
+  const base = new URL(document.baseURI).pathname.replace(/\/+$/, "");
   return base;
 }
 
@@ -73,7 +68,7 @@ function App() {
   return (
     <BrowserRouter basename={getBasePath()}>
       <StoreProvider onStateChange={handleStateChange}>
-        <AppContent />
+          <AppContent />
       </StoreProvider>
     </BrowserRouter>
   );

@@ -1,4 +1,4 @@
-export default function Delete() {
+export default function DeleteIcon() {
   return (
     <svg
       className="w-4 h-4"
