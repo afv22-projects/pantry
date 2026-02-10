@@ -1,13 +1,5 @@
-import {
-  createContext,
-  useContext,
-  useReducer,
-  useMemo,
-  useRef,
-  useEffect,
-} from "react";
-
-const StoreContext = createContext(null);
+import { useReducer, useMemo, useRef, useEffect } from "react";
+import { StoreContext } from "./StoreContext.js";
 
 const initialState = {
   recipes: [],
@@ -62,11 +54,17 @@ function reducer(state, action) {
         ),
       };
 
-    case "ADD_INGREDIENT":
+    case "ADD_INGREDIENT": {
+      // Check for existing ingredient with same name (case-insensitive)
+      const existing = state.ingredients.find(
+        (i) => i.name.toLowerCase() === action.ingredient.name.toLowerCase(),
+      );
+      if (existing) return state;
       return {
         ...state,
         ingredients: [...state.ingredients, action.ingredient],
       };
+    }
 
     case "ADD_INGREDIENT_TO_RECIPE": {
       const exists = state.recipeIngredients.some(
@@ -101,7 +99,7 @@ function reducer(state, action) {
   }
 }
 
-function createActions(dispatch, stateRef) {
+function createActions(dispatch) {
   return {
     init: (recipes, ingredients, recipeIngredients) =>
       dispatch({ type: "INIT", recipes, ingredients, recipeIngredients }),
@@ -121,21 +119,23 @@ function createActions(dispatch, stateRef) {
     },
 
     updateRecipe: (id, updates) =>
-      dispatch({ type: "UPDATE_RECIPE", id, updates, timestamp: new Date().toISOString() }),
+      dispatch({
+        type: "UPDATE_RECIPE",
+        id,
+        updates,
+        timestamp: new Date().toISOString(),
+      }),
 
-    deleteRecipe: (id) =>
-      dispatch({ type: "DELETE_RECIPE", id }),
+    deleteRecipe: (id) => dispatch({ type: "DELETE_RECIPE", id }),
 
     toggleNeeded: (id) =>
-      dispatch({ type: "TOGGLE_NEEDED", id, timestamp: new Date().toISOString() }),
+      dispatch({
+        type: "TOGGLE_NEEDED",
+        id,
+        timestamp: new Date().toISOString(),
+      }),
 
-    // Returns existing ingredient if name matches, otherwise creates new.
     addIngredient: (name, needed = false) => {
-      const existing = stateRef.current.ingredients.find(
-        (i) => i.name.toLowerCase() === name.toLowerCase(),
-      );
-      if (existing) return existing;
-
       const ingredient = {
         id: crypto.randomUUID(),
         name: name.toLowerCase(),
@@ -173,19 +173,11 @@ export function StoreProvider({ children, onStateChange }) {
     }
   }, [state, onStateChange]);
 
-  const actions = useMemo(() => createActions(dispatch, stateRef), []);
+  const actions = useMemo(() => createActions(dispatch), []);
 
   return (
     <StoreContext.Provider value={{ state, actions }}>
       {children}
     </StoreContext.Provider>
   );
-}
-
-export function useStore() {
-  const context = useContext(StoreContext);
-  if (!context) {
-    throw new Error("useStore must be used within a StoreProvider");
-  }
-  return context;
 }

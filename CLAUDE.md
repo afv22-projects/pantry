@@ -24,3 +24,4 @@
 
 ## Workflow
 - After completing each task from DESIGN.md, create a commit with those changes
+- Run the linter (`npm run lint` in the client directory) before committing changes

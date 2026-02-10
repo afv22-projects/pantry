@@ -1,7 +1,6 @@
 import { useEffect, useCallback } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { StoreProvider, useStore } from "./state.jsx";
-import { loadAll, saveState } from "./db.js";
+import { StoreProvider, useStore, loadAll, saveState } from "./store";
 import TabBar from "./components/TabBar.jsx";
 
 function RecipesPage() {

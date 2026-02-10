@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { useStore } from "../state.jsx";
+import { useStore } from "../store";
 
 export default function TabBar() {
   const { state } = useStore();
