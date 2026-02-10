@@ -1,6 +1,24 @@
 import { useReducer, useMemo, useRef, useEffect } from "react";
 import { StoreContext } from "./StoreContext.js";
 
+// Fallback for crypto.randomUUID() which requires secure context (HTTPS)
+// and may not be available in all browsers (especially iOS Firefox over HTTP)
+function generateUUID() {
+  if (typeof crypto !== "undefined" && crypto.randomUUID) {
+    try {
+      return crypto.randomUUID();
+    } catch {
+      // Falls through to fallback
+    }
+  }
+  // Fallback implementation
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
 const initialState = {
   recipes: [],
   ingredients: [],
@@ -126,7 +144,7 @@ function createActions(dispatch) {
     addRecipe: (name, notes = "", tags = "") => {
       const now = new Date().toISOString();
       const recipe = {
-        id: crypto.randomUUID(),
+        id: generateUUID(),
         name,
         notes,
         tags,
@@ -156,7 +174,7 @@ function createActions(dispatch) {
 
     addIngredient: (name, needed = false, category = "") => {
       const ingredient = {
-        id: crypto.randomUUID(),
+        id: generateUUID(),
         name: name.toLowerCase(),
         needed,
         category: category.toLowerCase(),
