@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/afv22-projects/pantry/compare/client-v1.1.0...client-v1.1.1) (2026-02-10)
+
+
+### Bug Fixes
+
+* formatting to trigger action ([73056ca](https://github.com/afv22-projects/pantry/commit/73056caa4b78d67f08bd0a7f973082f3913ad1c2))
+
 ## [1.1.0](https://github.com/afv22-projects/pantry/compare/client-v1.0.0...client-v1.1.0) (2026-02-10)
 
 
