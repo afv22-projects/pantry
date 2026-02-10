@@ -4,14 +4,8 @@ import { StoreProvider, useStore, loadAll, saveState } from "./store";
 import TabBar from "./components/TabBar.jsx";
 import RecipesPage from "./components/RecipesPage.jsx";
 import RecipeDetail from "./components/RecipeDetail.jsx";
-
-function IngredientsPage() {
-  return <div className="text-muted">ingredients list placeholder</div>;
-}
-
-function IngredientDetailPage() {
-  return <div className="text-muted">ingredient detail placeholder</div>;
-}
+import IngredientList from "./components/IngredientList.jsx";
+import IngredientDetail from "./components/IngredientDetail.jsx";
 
 function GroceryPage() {
   return <div className="text-muted">grocery list placeholder</div>;
@@ -49,8 +43,8 @@ function AppContent() {
             <Route path="/" element={<Navigate to="/recipes" replace />} />
             <Route path="/recipes" element={<RecipesPage />} />
             <Route path="/recipes/:id" element={<RecipeDetail />} />
-            <Route path="/ingredients" element={<IngredientsPage />} />
-            <Route path="/ingredients/:id" element={<IngredientDetailPage />} />
+            <Route path="/ingredients" element={<IngredientList />} />
+            <Route path="/ingredients/:id" element={<IngredientDetail />} />
             <Route path="/grocery" element={<GroceryPage />} />
           </Routes>
         </main>

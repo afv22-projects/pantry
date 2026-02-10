@@ -94,6 +94,15 @@ function reducer(state, action) {
         ),
       };
 
+    case "DELETE_INGREDIENT":
+      return {
+        ...state,
+        ingredients: state.ingredients.filter((i) => i.id !== action.id),
+        recipeIngredients: state.recipeIngredients.filter(
+          (ri) => ri.ingredient_id !== action.id,
+        ),
+      };
+
     default:
       return state;
   }
@@ -159,6 +168,8 @@ function createActions(dispatch) {
         recipe_id: recipeId,
         ingredient_id: ingredientId,
       }),
+
+    deleteIngredient: (id) => dispatch({ type: "DELETE_INGREDIENT", id }),
   };
 }
 
