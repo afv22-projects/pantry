@@ -11,11 +11,17 @@ permissions:
 
 jobs:
   release-please:
-    uses: afv22-projects/.github/.github/workflows/release-please.yml@main
+    runs-on: ubuntu-latest
+    outputs:
+      release-created: ${{ steps.release.outputs.client--release_created }}
+      tag-name: ${{ steps.release.outputs.client--tag_name }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
 
   build:
     needs: release-please
-    if: ${{ needs.release-please.outputs.release-created }}
+    if: ${{ needs.release-please.outputs.release-created == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
