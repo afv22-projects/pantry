@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useStore } from "../store";
+import TagInput from "./TagInput.jsx";
 
 export default function RecipeDetail() {
   const { id } = useParams();
@@ -12,7 +13,18 @@ export default function RecipeDetail() {
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [notes, setNotes] = useState(recipe?.notes || "");
   const [isEditingTags, setIsEditingTags] = useState(false);
-  const [tags, setTags] = useState(recipe?.tags || "");
+
+  // Parse tags from comma-separated string to array
+  const recipeTags = recipe?.tags;
+  const parsedTags = useMemo(() => {
+    if (!recipeTags) return [];
+    return recipeTags
+      .split(",")
+      .map((t) => t.trim().toLowerCase())
+      .filter(Boolean);
+  }, [recipeTags]);
+
+  const [editingTags, setEditingTags] = useState(parsedTags);
 
   if (!recipe) {
     return (
@@ -44,7 +56,7 @@ export default function RecipeDetail() {
   };
 
   const handleSaveTags = () => {
-    actions.updateRecipe(id, { tags: tags.toLowerCase() });
+    actions.updateRecipe(id, { tags: editingTags.join(",") });
     setIsEditingTags(false);
   };
 
@@ -55,12 +67,7 @@ export default function RecipeDetail() {
     }
   };
 
-  const tagList = recipe.tags
-    ? recipe.tags
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean)
-    : [];
+  const tagList = parsedTags;
 
   return (
     <div>
@@ -83,24 +90,18 @@ export default function RecipeDetail() {
         {ingredients.length === 0 ? (
           <p className="text-muted font-mono text-sm">no ingredients yet</p>
         ) : (
-          <div className="space-y-2">
+          <div className="flex flex-wrap gap-2">
             {ingredients.map((ingredient) => (
-              <div
+              <button
                 key={ingredient.id}
-                className="flex items-center justify-between bg-surface rounded-lg px-4 py-3"
+                onClick={() => handleToggleNeeded(ingredient.id)}
+                className="flex items-center gap-2 bg-surface border border-border rounded-full px-4 py-2 text-text text-sm lowercase transition-colors hover:border-muted"
               >
-                <span className="text-text lowercase">{ingredient.name}</span>
-                <button
-                  onClick={() => handleToggleNeeded(ingredient.id)}
-                  className={`font-mono text-[12px] px-3 py-1.5 rounded border transition-colors ${
-                    ingredient.needed
-                      ? "bg-accent text-white border-accent"
-                      : "text-muted border-border hover:border-muted"
-                  }`}
-                >
-                  {ingredient.needed ? "needed" : "+ need"}
-                </button>
-              </div>
+                {ingredient.needed && (
+                  <span className="w-2 h-2 rounded-full bg-accent" />
+                )}
+                {ingredient.name}
+              </button>
             ))}
           </div>
         )}
@@ -159,13 +160,9 @@ export default function RecipeDetail() {
         </h3>
         {isEditingTags ? (
           <div>
-            <input
-              type="text"
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
-              placeholder="comma-separated tags"
-              className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-text text-sm focus:outline-none focus:border-muted"
-              autoFocus
+            <TagInput
+              selectedTags={editingTags}
+              onChange={setEditingTags}
             />
             <div className="flex gap-2 mt-2">
               <button
@@ -176,7 +173,7 @@ export default function RecipeDetail() {
               </button>
               <button
                 onClick={() => {
-                  setTags(recipe.tags || "");
+                  setEditingTags(parsedTags);
                   setIsEditingTags(false);
                 }}
                 className="font-mono text-[12px] px-3 py-1.5 text-muted hover:text-text"
@@ -187,7 +184,10 @@ export default function RecipeDetail() {
           </div>
         ) : (
           <div
-            onClick={() => setIsEditingTags(true)}
+            onClick={() => {
+              setEditingTags(parsedTags);
+              setIsEditingTags(true);
+            }}
             className="cursor-pointer"
           >
             {tagList.length > 0 ? (

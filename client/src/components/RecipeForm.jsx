@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStore } from "../store";
+import TagInput from "./TagInput.jsx";
 
 export default function RecipeForm({ onClose }) {
   const navigate = useNavigate();
@@ -8,7 +9,7 @@ export default function RecipeForm({ onClose }) {
 
   const [name, setName] = useState("");
   const [notes, setNotes] = useState("");
-  const [tags, setTags] = useState("");
+  const [selectedTags, setSelectedTags] = useState([]);
   const [ingredientInput, setIngredientInput] = useState("");
   const [selectedIngredients, setSelectedIngredients] = useState([]);
 
@@ -73,7 +74,7 @@ export default function RecipeForm({ onClose }) {
     if (!name.trim()) return;
 
     // Create recipe
-    const recipe = actions.addRecipe(name.trim(), notes, tags.toLowerCase());
+    const recipe = actions.addRecipe(name.trim(), notes, selectedTags.join(","));
 
     // Add ingredients to recipe
     selectedIngredients.forEach((ingredient) => {
@@ -182,12 +183,9 @@ export default function RecipeForm({ onClose }) {
             <label className="block font-mono text-[11px] text-muted uppercase tracking-wider mb-2">
               Tags
             </label>
-            <input
-              type="text"
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
-              className="w-full bg-surface border border-border rounded-lg px-3 py-2.5 text-text focus:outline-none focus:border-muted"
-              placeholder="comma-separated tags"
+            <TagInput
+              selectedTags={selectedTags}
+              onChange={setSelectedTags}
             />
           </div>
 
