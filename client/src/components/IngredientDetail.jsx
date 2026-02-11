@@ -1,25 +1,38 @@
 import { useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useStore } from "../store";
+import {
+  useIngredients,
+  useRecipes,
+  useToggleNeeded,
+  useUpdateIngredient,
+  useDeleteIngredient,
+} from "../state";
 import CategoryInput from "./CategoryInput";
 import { Button, Card, EmptyState, BackLink } from "./common";
 
 export default function IngredientDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { state, actions } = useStore();
 
-  const ingredient = state.ingredients.find((i) => i.id === id);
+  const { data: ingredients, isLoading: ingredientsLoading } = useIngredients();
+  const { data: recipes, isLoading: recipesLoading } = useRecipes();
+  const toggleNeeded = useToggleNeeded();
+  const updateIngredient = useUpdateIngredient();
+  const deleteIngredient = useDeleteIngredient();
+
+  const ingredient = ingredients?.find((i) => i.id === id);
 
   const recipesUsingIngredient = useMemo(() => {
-    if (!ingredient) return [];
+    if (!ingredient || !recipes) return [];
+    // The API returns recipes with embedded ingredients
+    return recipes.filter((r) =>
+      r.ingredients?.some((i) => i.id === id)
+    );
+  }, [ingredient, recipes, id]);
 
-    const recipeIds = state.recipeIngredients
-      .filter((ri) => ri.ingredient_id === id)
-      .map((ri) => ri.recipe_id);
-
-    return state.recipes.filter((r) => recipeIds.includes(r.id));
-  }, [ingredient, id, state.recipeIngredients, state.recipes]);
+  if (ingredientsLoading || recipesLoading) {
+    return <div className="text-muted font-mono">loading...</div>;
+  }
 
   if (!ingredient) {
     return (
@@ -33,11 +46,19 @@ export default function IngredientDetail() {
   }
 
   const handleToggleNeeded = () => {
-    actions.toggleNeeded(id);
+    toggleNeeded.mutate(ingredient);
   };
 
   const handleCategoryChange = (category) => {
-    actions.updateIngredient(id, { category: category.toLowerCase() });
+    updateIngredient.mutate({ id, category: category.toLowerCase() });
+  };
+
+  const handleDelete = () => {
+    if (window.confirm("delete this ingredient?")) {
+      deleteIngredient.mutate(id, {
+        onSuccess: () => navigate("/ingredients"),
+      });
+    }
   };
 
   return (
@@ -86,12 +107,7 @@ export default function IngredientDetail() {
 
       <Button
         variant="danger"
-        onClick={() => {
-          if (window.confirm("delete this ingredient?")) {
-            actions.deleteIngredient(id);
-            navigate("/ingredients");
-          }
-        }}
+        onClick={handleDelete}
         className="mt-8"
       >
         delete ingredient
