@@ -1,6 +1,14 @@
 import { useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useStore } from "../store";
+import {
+  useRecipe,
+  useIngredients,
+  useUpdateRecipe,
+  useDeleteRecipe,
+  useAddIngredientToRecipe,
+  useRemoveIngredientFromRecipe,
+  useToggleNeeded,
+} from "../state";
 import RecipeEditor from "./RecipeEditor.jsx";
 import { Button, BackLink } from "./common";
 import { parseTags } from "../utils/tags.js";
@@ -8,28 +16,26 @@ import { parseTags } from "../utils/tags.js";
 export default function RecipeDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { state, actions } = useStore();
 
-  const recipe = state.recipes.find((r) => r.id === id);
+  const { data: recipe, isLoading: recipeLoading } = useRecipe(id);
+  const { data: allIngredients } = useIngredients();
+  const updateRecipe = useUpdateRecipe();
+  const deleteRecipe = useDeleteRecipe();
+  const addIngredientToRecipe = useAddIngredientToRecipe();
+  const removeIngredientFromRecipe = useRemoveIngredientFromRecipe();
+  const toggleNeeded = useToggleNeeded();
 
   // Parse tags from comma-separated string to array
   const parsedTags = useMemo(() => {
     return parseTags(recipe?.tags).map((t) => t.toLowerCase());
   }, [recipe?.tags]);
 
-  // Get ingredients for this recipe
-  const recipeIngredientIds = useMemo(
-    () =>
-      state.recipeIngredients
-        .filter((ri) => ri.recipe_id === id)
-        .map((ri) => ri.ingredient_id),
-    [state.recipeIngredients, id],
-  );
+  // API returns ingredients embedded in recipe
+  const ingredients = recipe?.ingredients || [];
 
-  const ingredients = useMemo(
-    () => state.ingredients.filter((i) => recipeIngredientIds.includes(i.id)),
-    [state.ingredients, recipeIngredientIds],
-  );
+  if (recipeLoading) {
+    return <div className="text-muted font-mono">loading...</div>;
+  }
 
   if (!recipe) {
     return (
@@ -43,15 +49,15 @@ export default function RecipeDetail() {
   }
 
   const handleNameChange = (newName) => {
-    actions.updateRecipe(id, { name: newName });
+    updateRecipe.mutate({ id, name: newName });
   };
 
   const handleNotesChange = (newNotes) => {
-    actions.updateRecipe(id, { notes: newNotes });
+    updateRecipe.mutate({ id, notes: newNotes });
   };
 
   const handleTagsChange = (newTags) => {
-    actions.updateRecipe(id, { tags: newTags.join(",") });
+    updateRecipe.mutate({ id, tags: newTags.join(",") });
   };
 
   const handleIngredientsChange = (newIngredients) => {
@@ -61,26 +67,30 @@ export default function RecipeDetail() {
     // Find added ingredients
     for (const ingredient of newIngredients) {
       if (!oldIds.has(ingredient.id)) {
-        actions.addIngredientToRecipe(id, ingredient.id);
+        addIngredientToRecipe.mutate({ recipeId: id, ingredientId: ingredient.id });
       }
     }
 
     // Find removed ingredients
     for (const ingredient of ingredients) {
       if (!newIds.has(ingredient.id)) {
-        actions.removeIngredientFromRecipe(id, ingredient.id);
+        removeIngredientFromRecipe.mutate({ recipeId: id, ingredientId: ingredient.id });
       }
     }
   };
 
   const handleToggleNeeded = (ingredientId) => {
-    actions.toggleNeeded(ingredientId);
+    const ingredient = allIngredients?.find((i) => i.id === ingredientId);
+    if (ingredient) {
+      toggleNeeded.mutate(ingredient);
+    }
   };
 
   const handleDelete = () => {
     if (window.confirm("delete this recipe?")) {
-      actions.deleteRecipe(id);
-      navigate("/recipes");
+      deleteRecipe.mutate(id, {
+        onSuccess: () => navigate("/recipes"),
+      });
     }
   };
 
