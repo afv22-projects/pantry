@@ -238,13 +238,13 @@ export default function RecipeEditor({
                   >
                     {source}
                   </a>
-                  <button
+                  <Button
                     onClick={() => onRemoveSource(source)}
-                    className="ml-3 text-muted hover:text-text transition-colors shrink-0"
+                    variant="icon"
                     aria-label="Delete source"
                   >
                     <DeleteIcon />
-                  </button>
+                  </Button>
                 </div>
               ))}
             </div>
