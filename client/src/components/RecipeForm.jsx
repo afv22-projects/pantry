@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useStore } from "../store";
+import { useCreateRecipe, useAddIngredientToRecipe } from "../state";
 import RecipeEditor from "./RecipeEditor.jsx";
 import { Button } from "./common";
 
 export default function RecipeForm({ onClose }) {
   const navigate = useNavigate();
-  const { actions } = useStore();
+  const createRecipe = useCreateRecipe();
+  const addIngredientToRecipe = useAddIngredientToRecipe();
 
   const [name, setName] = useState("");
   const [notes, setNotes] = useState("");
@@ -18,15 +19,23 @@ export default function RecipeForm({ onClose }) {
     if (!name.trim()) return;
 
     // Create recipe
-    const recipe = actions.addRecipe(name.trim(), notes, tags.join(","));
+    createRecipe.mutate(
+      { name: name.trim(), notes, tags: tags.join(",") },
+      {
+        onSuccess: (recipe) => {
+          // Add ingredients to recipe
+          ingredients.forEach((ingredient) => {
+            addIngredientToRecipe.mutate({
+              recipeId: recipe.id,
+              ingredientId: ingredient.id,
+            });
+          });
 
-    // Add ingredients to recipe
-    ingredients.forEach((ingredient) => {
-      actions.addIngredientToRecipe(recipe.id, ingredient.id);
-    });
-
-    navigate(`/recipes/${recipe.id}`);
-    onClose();
+          navigate(`/recipes/${recipe.id}`);
+          onClose();
+        },
+      }
+    );
   };
 
   return (
@@ -55,10 +64,10 @@ export default function RecipeForm({ onClose }) {
           <div className="flex gap-3">
             <Button
               type="submit"
-              disabled={!name.trim()}
+              disabled={!name.trim() || createRecipe.isPending}
               className="flex-1"
             >
-              create recipe
+              {createRecipe.isPending ? "creating..." : "create recipe"}
             </Button>
             <Button variant="secondary" onClick={onClose}>
               cancel

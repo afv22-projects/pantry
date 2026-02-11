@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { useStore } from "../store";
+import { useState, useMemo, useRef } from "react";
+import { useIngredients, useCreateIngredient } from "../state";
 import TagInput from "./TagInput.jsx";
 import ChipInput from "./ChipInput.jsx";
 import { Button } from "./common";
@@ -18,7 +18,9 @@ export default function RecipeEditor({
   namePlaceholder = "recipe name",
   nameEditable = true,
 }) {
-  const { state, actions } = useStore();
+  const { data: allIngredients } = useIngredients();
+  const createIngredient = useCreateIngredient();
+  const pendingIngredientRef = useRef(null);
 
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [editingNotes, setEditingNotes] = useState(notes);
@@ -35,14 +37,14 @@ export default function RecipeEditor({
 
   // Get suggestions for ingredient autocomplete
   const ingredientSuggestions = useMemo(() => {
-    if (!ingredientInput.trim()) return [];
+    if (!ingredientInput.trim() || !allIngredients) return [];
     const input = ingredientInput.toLowerCase();
-    return state.ingredients
+    return allIngredients
       .filter(
         (i) => i.name.toLowerCase().includes(input) && !ingredientIds.has(i.id),
       )
       .slice(0, 5);
-  }, [ingredientInput, state.ingredients, ingredientIds]);
+  }, [ingredientInput, allIngredients, ingredientIds]);
 
   const handleIngredientsChange = (newIngredients) => {
     onIngredientsChange(newIngredients);
@@ -50,7 +52,7 @@ export default function RecipeEditor({
 
   const handleCreateIngredient = (inputValue) => {
     // Check if ingredient already exists
-    const existing = state.ingredients.find(
+    const existing = allIngredients?.find(
       (i) => i.name.toLowerCase() === inputValue.toLowerCase(),
     );
 
@@ -61,8 +63,21 @@ export default function RecipeEditor({
       return null;
     }
 
-    // Create new ingredient
-    return actions.addIngredient(inputValue);
+    // Create new ingredient asynchronously
+    // We'll return a promise-like object that ChipInput can handle
+    pendingIngredientRef.current = inputValue;
+    createIngredient.mutate(
+      { name: inputValue },
+      {
+        onSuccess: (newIngredient) => {
+          if (pendingIngredientRef.current === inputValue) {
+            onIngredientsChange([...ingredients, newIngredient]);
+            pendingIngredientRef.current = null;
+          }
+        },
+      }
+    );
+    return null; // Don't add immediately, wait for mutation to complete
   };
 
   const handleSaveNotes = () => {
