@@ -1,20 +1,29 @@
 import { Link } from "react-router-dom";
-import { useStore } from "../store";
+import { useIngredients, useToggleNeeded } from "../state";
 import { Button, Card, GroupedList } from "./common";
 import { CheckmarkIcon } from "./icons";
 
 export default function IngredientList() {
-  const { state, actions } = useStore();
+  const { data: ingredients, isLoading, isError } = useIngredients();
+  const toggleNeeded = useToggleNeeded();
 
-  const handleToggleNeeded = (e, ingredientId) => {
+  const handleToggleNeeded = (e, ingredient) => {
     e.preventDefault();
     e.stopPropagation();
-    actions.toggleNeeded(ingredientId);
+    toggleNeeded.mutate(ingredient);
   };
+
+  if (isLoading) {
+    return <div className="text-muted font-mono">loading...</div>;
+  }
+
+  if (isError) {
+    return <div className="text-red-500 font-mono">error loading ingredients</div>;
+  }
 
   return (
     <GroupedList
-      items={state.ingredients}
+      items={ingredients || []}
       getCategory={(ingredient) => ingredient.category}
       emptyMessage="no ingredients yet. add some from a recipe."
       renderItem={(ingredient) => (
@@ -28,7 +37,7 @@ export default function IngredientList() {
             <Button
               variant="checkbox"
               active={ingredient.needed}
-              onClick={(e) => handleToggleNeeded(e, ingredient.id)}
+              onClick={(e) => handleToggleNeeded(e, ingredient)}
             >
               {ingredient.needed && <CheckmarkIcon />}
             </Button>
