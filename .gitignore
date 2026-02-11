@@ -1,1 +1,5 @@
 .DS_Store
+*.egg-info
+server/build
+*.db
+__pycache__

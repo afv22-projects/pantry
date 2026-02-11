@@ -1,0 +1,14 @@
+[project]
+name = "pantry-server"
+version = "0.1.0"
+description = "FastAPI backend for Pantry app"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "pydantic>=2.10.0",
+    "sqlalchemy>=2.0.0",
+]
+
+[tool.setuptools]
+py-modules = ["main", "models", "database"]
