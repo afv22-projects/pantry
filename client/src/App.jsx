@@ -1,6 +1,5 @@
-import { useEffect, useCallback } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { StoreProvider, useStore, loadAll, saveState } from "./store";
+import { StateProvider } from "./state";
 import TabBar from "./components/TabBar.jsx";
 import RecipesPage from "./components/RecipesPage.jsx";
 import RecipeDetail from "./components/RecipeDetail.jsx";
@@ -10,22 +9,6 @@ import GroceryList from "./components/GroceryList.jsx";
 import { LogoIcon } from "./components/icons";
 
 function AppContent() {
-  const { state, actions } = useStore();
-
-  useEffect(() => {
-    loadAll().then(({ recipes, ingredients, recipeIngredients }) => {
-      actions.init(recipes, ingredients, recipeIngredients);
-    });
-  }, [actions]);
-
-  if (!state.loaded) {
-    return (
-      <div className="min-h-screen bg-bg text-text flex items-center justify-center">
-        <p className="text-muted font-mono">loading...</p>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-bg text-text">
       <div className="max-w-160 mx-auto px-4">
@@ -61,15 +44,11 @@ function getBasePath() {
 }
 
 function App() {
-  const handleStateChange = useCallback((state) => {
-    saveState(state);
-  }, []);
-
   return (
     <BrowserRouter basename={getBasePath()}>
-      <StoreProvider onStateChange={handleStateChange}>
-          <AppContent />
-      </StoreProvider>
+      <StateProvider>
+        <AppContent />
+      </StateProvider>
     </BrowserRouter>
   );
 }
