@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useStore } from "../store";
+import { useRecipes } from "../state";
 import RecipeCard from "./RecipeCard.jsx";
 import TagFilter from "./TagFilter.jsx";
 import RecipeForm from "./RecipeForm.jsx";
@@ -7,36 +7,37 @@ import { Button, EmptyState } from "./common";
 import { parseTags } from "../utils/tags.js";
 
 export default function RecipesPage() {
-  const { state } = useStore();
+  const { data: recipes, isLoading, isError } = useRecipes();
   const [selectedTags, setSelectedTags] = useState([]);
   const [showForm, setShowForm] = useState(false);
 
   // Get all unique tags from all recipes
   const allTags = useMemo(() => {
+    if (!recipes) return [];
     const tagSet = new Set();
-    state.recipes.forEach((recipe) => {
+    recipes.forEach((recipe) => {
       parseTags(recipe.tags)
         .map((t) => t.toLowerCase())
         .forEach((tag) => tagSet.add(tag));
     });
     return Array.from(tagSet).sort();
-  }, [state.recipes]);
+  }, [recipes]);
 
-  // Get ingredient count for each recipe
-  const getIngredientCount = (recipeId) => {
-    return state.recipeIngredients.filter((ri) => ri.recipe_id === recipeId)
-      .length;
+  // Get ingredient count for each recipe (API returns embedded ingredients)
+  const getIngredientCount = (recipe) => {
+    return recipe.ingredients?.length || 0;
   };
 
   // Filter recipes by selected tags (AND logic)
   const filteredRecipes = useMemo(() => {
-    if (selectedTags.length === 0) return state.recipes;
+    if (!recipes) return [];
+    if (selectedTags.length === 0) return recipes;
 
-    return state.recipes.filter((recipe) => {
+    return recipes.filter((recipe) => {
       const recipeTags = parseTags(recipe.tags).map((t) => t.toLowerCase());
       return selectedTags.every((tag) => recipeTags.includes(tag));
     });
-  }, [state.recipes, selectedTags]);
+  }, [recipes, selectedTags]);
 
   const handleTagToggle = (tag) => {
     setSelectedTags((prev) =>
@@ -47,6 +48,14 @@ export default function RecipesPage() {
   const handleClearTags = () => {
     setSelectedTags([]);
   };
+
+  if (isLoading) {
+    return <div className="text-muted font-mono">loading...</div>;
+  }
+
+  if (isError) {
+    return <div className="text-red-500 font-mono">error loading recipes</div>;
+  }
 
   return (
     <div>
@@ -64,7 +73,7 @@ export default function RecipesPage() {
           <RecipeCard
             key={recipe.id}
             recipe={recipe}
-            ingredientCount={getIngredientCount(recipe.id)}
+            ingredientCount={getIngredientCount(recipe)}
           />
         ))}
       </div>
@@ -72,7 +81,7 @@ export default function RecipesPage() {
       {filteredRecipes.length === 0 && (
         <EmptyState
           message={
-            state.recipes.length === 0
+            (recipes?.length || 0) === 0
               ? "no recipes yet"
               : "no recipes match the selected tags"
           }
