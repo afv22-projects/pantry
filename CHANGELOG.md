@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.0](https://github.com/afv22-projects/pantry/compare/v1.0.2...v1.1.0) (2026-02-11)
+
+
+### Features
+
+* add recipe source field with URL storage ([d3b4083](https://github.com/afv22-projects/pantry/commit/d3b4083b43fdeb429b05e2ef0d302bd7422c7e4c))
+* add standalone create-ingredient functionality ([753d840](https://github.com/afv22-projects/pantry/commit/753d840c88279a53f827b34f2394b32ba9e33a3c))
+
+
+### Bug Fixes
+
+* show used-in recipes in ingredient view ([2ee184e](https://github.com/afv22-projects/pantry/commit/2ee184ef7139607f3f9242631f597e73dc117000))
+
 ## [1.0.2](https://github.com/afv22-projects/pantry/compare/v1.0.1...v1.0.2) (2026-02-11)
 
 
