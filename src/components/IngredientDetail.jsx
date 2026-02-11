@@ -23,8 +23,9 @@ export default function IngredientDetail() {
   const recipesUsingIngredient = useMemo(() => {
     if (!ingredient || !recipes) return [];
     // The API returns recipes with embedded ingredients
+    // Convert id to number since useParams returns strings
     return recipes.filter((r) =>
-      r.ingredients?.some((i) => i.id === id)
+      r.ingredients?.some((i) => i.id === Number(id))
     );
   }, [ingredient, recipes, id]);
 
