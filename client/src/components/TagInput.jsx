@@ -1,15 +1,15 @@
 import { useMemo, useState } from "react";
-import { useStore } from "../store";
+import { useRecipes } from "../state";
 import ChipInput from "./ChipInput.jsx";
 
 export default function TagInput({ selectedTags, onChange, onClose, autoFocus }) {
-  const { state } = useStore();
+  const { data: recipes } = useRecipes();
   const [inputValue, setInputValue] = useState("");
 
   // Get all unique tags from all recipes
   const allTags = useMemo(() => {
     const tagSet = new Set();
-    state.recipes.forEach((recipe) => {
+    (recipes || []).forEach((recipe) => {
       if (recipe.tags) {
         recipe.tags
           .split(",")
@@ -19,7 +19,7 @@ export default function TagInput({ selectedTags, onChange, onClose, autoFocus })
       }
     });
     return Array.from(tagSet).sort();
-  }, [state.recipes]);
+  }, [recipes]);
 
   // Filter suggestions based on input
   const suggestions = useMemo(() => {

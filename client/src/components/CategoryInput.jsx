@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useStore } from "../store";
+import { useIngredients } from "../state";
 import Dropdown from "./common/Dropdown";
 
 const DEFAULT_CATEGORIES = [
@@ -16,15 +16,15 @@ const DEFAULT_CATEGORIES = [
 ];
 
 export default function CategoryInput({ value, onChange }) {
-  const { state } = useStore();
+  const { data: ingredients } = useIngredients();
 
   const allCategories = useMemo(() => {
-    const ingredientCategories = state.ingredients
+    const ingredientCategories = (ingredients || [])
       .map((i) => i.category)
       .filter((c) => c && c.trim());
     const combined = new Set([...DEFAULT_CATEGORIES, ...ingredientCategories]);
     return Array.from(combined).sort();
-  }, [state.ingredients]);
+  }, [ingredients]);
 
   const handleSelect = (category) => {
     onChange(category.toLowerCase());
