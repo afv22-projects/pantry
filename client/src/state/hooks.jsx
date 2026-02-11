@@ -12,6 +12,22 @@ export function useIngredients() {
   });
 }
 
+export function useIngredient(id) {
+  return useQuery({
+    queryKey: ["ingredients", id],
+    queryFn: () => api.getIngredient(id),
+    enabled: !!id,
+  });
+}
+
+export function useCategories() {
+  return useQuery({
+    queryKey: ["categories"],
+    queryFn: api.getCategories,
+    staleTime: 1000 * 60 * 60, // Categories don't change often, cache for 1 hour
+  });
+}
+
 export function useToggleNeeded() {
   const qc = useQueryClient();
 
@@ -26,7 +42,7 @@ export function useToggleNeeded() {
       qc.setQueryData(["ingredients"], (old) =>
         old?.map((i) =>
           i.id === ingredient.id
-            ? { ...i, needed: !i.needed, updated_at: new Date().toISOString() }
+            ? { ...i, needed: !i.needed }
             : i,
         ),
       );
@@ -42,6 +58,8 @@ export function useToggleNeeded() {
 
     onSettled: () => {
       qc.invalidateQueries({ queryKey: ["ingredients"] });
+      // Also invalidate recipes since they embed ingredient data (including needed status)
+      qc.invalidateQueries({ queryKey: ["recipes"] });
     },
   });
 }
@@ -62,7 +80,6 @@ export function useCreateIngredient() {
           ...newIngredient,
           id: `temp-${Date.now()}`,
           needed: newIngredient.needed ?? false,
-          updated_at: new Date().toISOString(),
         },
       ]);
 
@@ -94,7 +111,7 @@ export function useUpdateIngredient() {
       qc.setQueryData(["ingredients"], (old) =>
         old?.map((i) =>
           i.id === updated.id
-            ? { ...i, ...updated, updated_at: new Date().toISOString() }
+            ? { ...i, ...updated }
             : i,
         ),
       );
@@ -190,7 +207,7 @@ export function useUpdateRecipe() {
       qc.setQueryData(["recipes"], (old) =>
         old?.map((r) =>
           r.id === updated.id
-            ? { ...r, ...updated, updated_at: new Date().toISOString() }
+            ? { ...r, ...updated }
             : r,
         ),
       );
@@ -199,7 +216,6 @@ export function useUpdateRecipe() {
         qc.setQueryData(["recipes", updated.id], (old) => ({
           ...old,
           ...updated,
-          updated_at: new Date().toISOString(),
         }));
       }
 

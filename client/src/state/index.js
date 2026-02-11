@@ -3,6 +3,8 @@ export { api } from "./api.jsx";
 export {
   // Ingredients
   useIngredients,
+  useIngredient,
+  useCategories,
   useToggleNeeded,
   useCreateIngredient,
   useUpdateIngredient,

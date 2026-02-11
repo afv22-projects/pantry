@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
-  useIngredients,
+  useIngredient,
   useRecipes,
   useToggleNeeded,
   useUpdateIngredient,
@@ -14,13 +14,11 @@ export default function IngredientDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const { data: ingredients, isLoading: ingredientsLoading } = useIngredients();
+  const { data: ingredient, isLoading: ingredientLoading } = useIngredient(id);
   const { data: recipes, isLoading: recipesLoading } = useRecipes();
   const toggleNeeded = useToggleNeeded();
   const updateIngredient = useUpdateIngredient();
   const deleteIngredient = useDeleteIngredient();
-
-  const ingredient = ingredients?.find((i) => i.id === id);
 
   const recipesUsingIngredient = useMemo(() => {
     if (!ingredient || !recipes) return [];
@@ -30,7 +28,7 @@ export default function IngredientDetail() {
     );
   }, [ingredient, recipes, id]);
 
-  if (ingredientsLoading || recipesLoading) {
+  if (ingredientLoading || recipesLoading) {
     return <div className="text-muted font-mono">loading...</div>;
   }
 
