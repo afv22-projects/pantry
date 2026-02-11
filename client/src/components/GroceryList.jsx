@@ -1,15 +1,24 @@
 import { useMemo } from "react";
-import { useStore } from "../store";
+import { useIngredients, useToggleNeeded } from "../state";
 import { Button, Card, EmptyState, GroupedList } from "./common";
 import { CheckmarkIcon, DeleteIcon } from "./icons";
 
 export default function GroceryList() {
-  const { state, actions } = useStore();
+  const { data: ingredients, isLoading, isError } = useIngredients();
+  const toggleNeeded = useToggleNeeded();
 
   const neededItems = useMemo(
-    () => state.ingredients.filter((i) => i.needed),
-    [state.ingredients],
+    () => ingredients?.filter((i) => i.needed) || [],
+    [ingredients],
   );
+
+  if (isLoading) {
+    return <div className="text-muted font-mono">loading...</div>;
+  }
+
+  if (isError) {
+    return <div className="text-red-500 font-mono">error loading ingredients</div>;
+  }
 
   if (neededItems.length === 0) {
     return (
@@ -30,7 +39,7 @@ export default function GroceryList() {
             <Button
               variant="checkbox"
               active={true}
-              onClick={() => actions.toggleNeeded(ingredient.id)}
+              onClick={() => toggleNeeded.mutate(ingredient)}
             >
               <CheckmarkIcon />
             </Button>
@@ -38,7 +47,7 @@ export default function GroceryList() {
           </div>
           <Button
             variant="icon"
-            onClick={() => actions.toggleNeeded(ingredient.id)}
+            onClick={() => toggleNeeded.mutate(ingredient)}
             aria-label="Remove from grocery list"
           >
             <DeleteIcon />
