@@ -37,7 +37,7 @@ function AppContent() {
 
 // Derive the base path from the URL so the app can be served from any subdirectory
 // without knowing the path at build time. When served at example.com/pantry/,
-// this returns "/pantry". When served at the root, this returns "".
+// this returns "/pantry". When served at the root, this returns an empty string.
 function getBasePath() {
   const base = new URL(document.baseURI).pathname.replace(/\/+$/, "");
   return base;
