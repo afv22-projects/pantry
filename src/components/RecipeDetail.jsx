@@ -7,6 +7,8 @@ import {
   useAddIngredientToRecipe,
   useRemoveIngredientFromRecipe,
   useToggleNeeded,
+  useAddSourceToRecipe,
+  useRemoveSourceFromRecipe,
 } from "../state/index.js";
 import RecipeEditor from "./RecipeEditor.jsx";
 import { Button, BackLink } from "./common/index.jsx";
@@ -22,9 +24,12 @@ export default function RecipeDetail() {
   const addIngredientToRecipe = useAddIngredientToRecipe();
   const removeIngredientFromRecipe = useRemoveIngredientFromRecipe();
   const toggleNeeded = useToggleNeeded();
+  const addSourceToRecipe = useAddSourceToRecipe();
+  const removeSourceFromRecipe = useRemoveSourceFromRecipe();
 
   // API returns ingredients embedded in recipe
   const ingredients = recipe?.ingredients || [];
+  const sources = recipe?.sources || [];
 
   if (recipeLoading) {
     return <div className="text-muted font-mono">loading...</div>;
@@ -75,6 +80,14 @@ export default function RecipeDetail() {
     }
   };
 
+  const handleAddSource = (source) => {
+    addSourceToRecipe.mutate({ recipeId: id, source });
+  };
+
+  const handleRemoveSource = (source) => {
+    removeSourceFromRecipe.mutate({ recipeId: id, source });
+  };
+
   const handleDelete = () => {
     if (window.confirm("delete this recipe?")) {
       deleteRecipe.mutate(id, {
@@ -101,6 +114,9 @@ export default function RecipeDetail() {
         ingredients={ingredients}
         onIngredientsChange={handleIngredientsChange}
         onIngredientToggleNeeded={handleToggleNeeded}
+        sources={sources}
+        onAddSource={handleAddSource}
+        onRemoveSource={handleRemoveSource}
         showNeededIndicator={true}
         nameEditable={true}
       />

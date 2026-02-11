@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useIngredients } from "../state/index.js";
 import ChipInput from "./ChipInput.jsx";
 import { Button } from "./common/index.jsx";
+import DeleteIcon from "./icons/DeleteIcon.jsx";
 
 export default function RecipeEditor({
   name,
@@ -11,6 +12,9 @@ export default function RecipeEditor({
   ingredients,
   onIngredientsChange,
   onIngredientToggleNeeded,
+  sources = [],
+  onAddSource,
+  onRemoveSource,
   showNeededIndicator = false,
   namePlaceholder = "recipe name",
   nameEditable = true,
@@ -22,6 +26,8 @@ export default function RecipeEditor({
   const [editingNotes, setEditingNotes] = useState(notes);
   const [isEditingIngredients, setIsEditingIngredients] = useState(false);
   const [ingredientInput, setIngredientInput] = useState("");
+  const [isAddingSource, setIsAddingSource] = useState(false);
+  const [sourceUrl, setSourceUrl] = useState("");
 
   // Get ingredient IDs or names for filtering suggestions
   const ingredientIdentifiers = useMemo(
@@ -77,6 +83,18 @@ export default function RecipeEditor({
   const handleSaveNotes = () => {
     onNotesChange(editingNotes);
     setIsEditingNotes(false);
+  };
+
+  const handleAddSource = () => {
+    if (!sourceUrl.trim()) return;
+    onAddSource(sourceUrl.trim());
+    setSourceUrl("");
+    setIsAddingSource(false);
+  };
+
+  const handleCancelAddSource = () => {
+    setSourceUrl("");
+    setIsAddingSource(false);
   };
 
   return (
@@ -198,6 +216,77 @@ export default function RecipeEditor({
           </div>
         )}
       </section>
+
+      {/* Source Section */}
+      {!isCreateMode && onAddSource && onRemoveSource && (
+        <section className="mb-8">
+          <h3 className="font-mono text-[11px] text-muted uppercase tracking-wider mb-3">
+            Source
+          </h3>
+          {sources.length > 0 && (
+            <div className="space-y-3 mb-3">
+              {sources.map((source, index) => (
+                <div
+                  key={index}
+                  className="bg-surface border border-border rounded-lg p-4 flex items-center justify-between group hover:border-muted transition-colors"
+                >
+                  <a
+                    href={source}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-text hover:underline text-sm truncate flex-1 min-w-0"
+                  >
+                    {source}
+                  </a>
+                  <button
+                    onClick={() => onRemoveSource(source)}
+                    className="ml-3 text-muted hover:text-text transition-colors shrink-0"
+                    aria-label="Delete source"
+                  >
+                    <DeleteIcon />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          {isAddingSource ? (
+            <div className="bg-surface border border-border rounded-lg p-3">
+              <input
+                type="url"
+                value={sourceUrl}
+                onChange={(e) => setSourceUrl(e.target.value)}
+                placeholder="paste url"
+                className="w-full bg-background border border-border rounded px-3 py-2 text-text text-sm focus:outline-none focus:border-muted mb-3"
+                autoFocus
+              />
+              <div className="flex gap-2">
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleAddSource}
+                  disabled={!sourceUrl.trim()}
+                >
+                  add
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleCancelAddSource}
+                >
+                  cancel
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <button
+              onClick={() => setIsAddingSource(true)}
+              className="w-full bg-surface border border-border rounded-lg p-3 text-muted font-mono text-sm hover:border-muted transition-colors text-left"
+            >
+              click to add source
+            </button>
+          )}
+        </section>
+      )}
     </div>
   );
 }

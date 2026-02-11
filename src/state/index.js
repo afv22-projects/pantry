@@ -18,4 +18,7 @@ export {
   // Recipe-Ingredient joins
   useAddIngredientToRecipe,
   useRemoveIngredientFromRecipe,
+  // Recipe-Source joins
+  useAddSourceToRecipe,
+  useRemoveSourceFromRecipe,
 } from "./hooks.jsx";

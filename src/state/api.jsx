@@ -60,11 +60,11 @@ export const api = {
         }
 
         const ingredients = await Promise.all(
-          recipe.ingredient_ids.map(id => api.getIngredient(id))
+          recipe.ingredient_ids.map((id) => api.getIngredient(id)),
         );
 
         return { ...recipe, ingredients };
-      })
+      }),
     );
 
     return recipesWithIngredients;
@@ -81,7 +81,9 @@ export const api = {
     }
 
     const ingredients = await Promise.all(
-      recipe.ingredient_ids.map(ingredientId => api.getIngredient(ingredientId))
+      recipe.ingredient_ids.map((ingredientId) =>
+        api.getIngredient(ingredientId),
+      ),
     );
 
     return { ...recipe, ingredients };
@@ -104,12 +106,15 @@ export const api = {
     const createdRecipe = await res.json();
 
     // Expand ingredient_ids to full ingredient objects for consistency
-    if (!createdRecipe.ingredient_ids || createdRecipe.ingredient_ids.length === 0) {
+    if (
+      !createdRecipe.ingredient_ids ||
+      createdRecipe.ingredient_ids.length === 0
+    ) {
       return { ...createdRecipe, ingredients: [] };
     }
 
     const ingredients = await Promise.all(
-      createdRecipe.ingredient_ids.map(id => api.getIngredient(id))
+      createdRecipe.ingredient_ids.map((id) => api.getIngredient(id)),
     );
 
     return { ...createdRecipe, ingredients };
@@ -149,5 +154,23 @@ export const api = {
     );
     if (!res.ok) throw new Error("Failed to unlink ingredient from recipe");
     return res.json();
+  },
+
+  async addSourceToRecipe({ recipeId, source }) {
+    const res = await fetch(
+      `${API_BASE}/recipes/${recipeId}/sources?source=${encodeURIComponent(source)}`,
+      { method: "POST" },
+    );
+    if (!res.ok) throw new Error("Failed to add source to recipe");
+    return res.json();
+  },
+
+  async removeSourceFromRecipe({ recipeId, source }) {
+    const res = await fetch(
+      `${API_BASE}/recipes/${recipeId}/sources?source=${encodeURIComponent(source)}`,
+      { method: "DELETE" },
+    );
+    if (!res.ok) throw new Error("Failed to remove source from recipe");
+    return null;
   },
 };

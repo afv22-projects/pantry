@@ -317,3 +317,33 @@ export function useRemoveIngredientFromRecipe() {
     },
   });
 }
+
+// ============================================================
+// Recipe <-> Source management
+// ============================================================
+
+export function useAddSourceToRecipe() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: api.addSourceToRecipe,
+
+    onSettled: (_data, _err, { recipeId }) => {
+      qc.invalidateQueries({ queryKey: ["recipes"] });
+      qc.invalidateQueries({ queryKey: ["recipes", recipeId] });
+    },
+  });
+}
+
+export function useRemoveSourceFromRecipe() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: api.removeSourceFromRecipe,
+
+    onSettled: (_data, _err, { recipeId }) => {
+      qc.invalidateQueries({ queryKey: ["recipes"] });
+      qc.invalidateQueries({ queryKey: ["recipes", recipeId] });
+    },
+  });
+}
