@@ -1,12 +1,12 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { StateProvider } from "./state";
+import { StateProvider } from "./state/index.js";
 import TabBar from "./components/TabBar.jsx";
 import RecipesPage from "./components/RecipesPage.jsx";
 import RecipeDetail from "./components/RecipeDetail.jsx";
 import IngredientList from "./components/IngredientList.jsx";
 import IngredientDetail from "./components/IngredientDetail.jsx";
 import GroceryList from "./components/GroceryList.jsx";
-import { LogoIcon } from "./components/icons";
+import { LogoIcon } from "./components/icons/index.jsx";
 
 function AppContent() {
   return (

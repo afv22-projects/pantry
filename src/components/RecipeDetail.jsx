@@ -7,9 +7,9 @@ import {
   useAddIngredientToRecipe,
   useRemoveIngredientFromRecipe,
   useToggleNeeded,
-} from "../state";
+} from "../state/index.js";
 import RecipeEditor from "./RecipeEditor.jsx";
-import { Button, BackLink } from "./common";
+import { Button, BackLink } from "./common/index.jsx";
 
 export default function RecipeDetail() {
   const { id } = useParams();

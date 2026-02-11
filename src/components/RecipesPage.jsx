@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { useRecipes } from "../state";
+import { useRecipes } from "../state/index.js";
 import RecipeCard from "./RecipeCard.jsx";
 import RecipeForm from "./RecipeForm.jsx";
-import { Button, EmptyState } from "./common";
+import { Button, EmptyState } from "./common/index.jsx";
 
 export default function RecipesPage() {
   const { data: recipes, isLoading, isError } = useRecipes();

@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
-import { useIngredients } from "../state";
+import { useIngredients } from "../state/index.js";
 import ChipInput from "./ChipInput.jsx";
-import { Button } from "./common";
+import { Button } from "./common/index.jsx";
 
 export default function RecipeEditor({
   name,

@@ -11,20 +11,14 @@ permissions:
   packages: write
 
 jobs:
-  release-please:
-    runs-on: ubuntu-latest
-    outputs:
-      client-release-created: ${{ steps.release.outputs.client--release_created }}
-      client-tag-name: ${{ steps.release.outputs.client--tag_name }}
-      server-release-created: ${{ steps.release.outputs.server--release_created }}
-      server-tag-name: ${{ steps.release.outputs.server--tag_name }}
-    steps:
-      - uses: googleapis/release-please-action@v4
-        id: release
+  release:
+    uses: afv22-projects/.github/.github/workflows/release-please.yml@main
+    with:
+      release-type: node
 
   build:
-    needs: release-please
-    if: ${{ needs.release-please.outputs.client-release-created == 'true' }}
+    needs: release
+    if: needs.release.outputs.release-created == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -46,11 +40,11 @@ jobs:
         working-directory: client
 
       - name: Create tarball
-        run: tar -czvf pantry-client-${{ needs.release-please.outputs.client-tag-name }}.tar.gz dist
+        run: tar -czvf pantry-client-${{ needs.release.outputs.tag-name }}.tar.gz dist
         working-directory: client
 
       - name: Upload release asset
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ needs.release-please.outputs.client-tag-name }}
-          files: client/pantry-client-${{ needs.release-please.outputs.client-tag-name }}.tar.gz
+          tag_name: ${{ needs.release.outputs.tag-name }}
+          files: client/pantry-client-${{ needs.release.outputs.tag-name }}.tar.gz
