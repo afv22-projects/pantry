@@ -134,9 +134,7 @@ def get_recipe(recipe_id: str, db: Session = Depends(get_db)):
 
 
 @app.patch("/api/recipes/{recipe_id}", response_model=RecipeWithIngredients)
-def update_recipe(
-    recipe_id: str, updates: RecipeUpdate, db: Session = Depends(get_db)
-):
+def update_recipe(recipe_id: str, updates: RecipeUpdate, db: Session = Depends(get_db)):
     recipe = db.query(RecipeDB).filter(RecipeDB.id == recipe_id).first()
     if not recipe:
         raise HTTPException(status_code=404, detail="Recipe not found")
