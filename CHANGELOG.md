@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/afv22-projects/pantry/compare/v1.0.0...v1.0.1) (2026-02-11)
+
+
+### Bug Fixes
+
+* formatting to trigger release ([bd136a6](https://github.com/afv22-projects/pantry/commit/bd136a6422b2d89ed972218876b49f985778837f))
+
 ## 1.0.0 (2026-02-11)
 
 
