@@ -1,6 +1,5 @@
-import { useState, useMemo, useRef } from "react";
-import { useIngredients, useCreateIngredient } from "../state";
-import TagInput from "./TagInput.jsx";
+import { useState, useMemo } from "react";
+import { useIngredients } from "../state";
 import ChipInput from "./ChipInput.jsx";
 import { Button } from "./common";
 
@@ -9,29 +8,24 @@ export default function RecipeEditor({
   onNameChange,
   notes,
   onNotesChange,
-  tags,
-  onTagsChange,
   ingredients,
   onIngredientsChange,
   onIngredientToggleNeeded,
   showNeededIndicator = false,
   namePlaceholder = "recipe name",
   nameEditable = true,
+  isCreateMode = false,
 }) {
   const { data: allIngredients } = useIngredients();
-  const createIngredient = useCreateIngredient();
-  const pendingIngredientRef = useRef(null);
 
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [editingNotes, setEditingNotes] = useState(notes);
-  const [isEditingTags, setIsEditingTags] = useState(false);
-  const [editingTags, setEditingTags] = useState(tags);
   const [isEditingIngredients, setIsEditingIngredients] = useState(false);
   const [ingredientInput, setIngredientInput] = useState("");
 
-  // Get ingredient IDs for filtering suggestions
-  const ingredientIds = useMemo(
-    () => new Set(ingredients.map((i) => i.id)),
+  // Get ingredient IDs or names for filtering suggestions
+  const ingredientIdentifiers = useMemo(
+    () => new Set(ingredients.map((i) => i.id || i.name.toLowerCase())),
     [ingredients],
   );
 
@@ -41,10 +35,10 @@ export default function RecipeEditor({
     const input = ingredientInput.toLowerCase();
     return allIngredients
       .filter(
-        (i) => i.name.toLowerCase().includes(input) && !ingredientIds.has(i.id),
+        (i) => i.name.toLowerCase().includes(input) && !ingredientIdentifiers.has(i.id) && !ingredientIdentifiers.has(i.name.toLowerCase()),
       )
       .slice(0, 5);
-  }, [ingredientInput, allIngredients, ingredientIds]);
+  }, [ingredientInput, allIngredients, ingredientIdentifiers]);
 
   const handleIngredientsChange = (newIngredients) => {
     onIngredientsChange(newIngredients);
@@ -57,27 +51,27 @@ export default function RecipeEditor({
     );
 
     if (existing) {
-      if (!ingredientIds.has(existing.id)) {
+      // Check if it's already in the list
+      const alreadyAdded = ingredients.some((i) =>
+        (i.id && i.id === existing.id) ||
+        (i.name && i.name.toLowerCase() === existing.name.toLowerCase())
+      );
+      if (!alreadyAdded) {
+        // In both modes, return the existing ingredient object
         return existing;
       }
       return null;
     }
 
-    // Create new ingredient asynchronously
-    // We'll return a promise-like object that ChipInput can handle
-    pendingIngredientRef.current = inputValue;
-    createIngredient.mutate(
-      { name: inputValue },
-      {
-        onSuccess: (newIngredient) => {
-          if (pendingIngredientRef.current === inputValue) {
-            onIngredientsChange([...ingredients, newIngredient]);
-            pendingIngredientRef.current = null;
-          }
-        },
-      }
-    );
-    return null; // Don't add immediately, wait for mutation to complete
+    // In create mode, just add the name locally without creating in DB
+    if (isCreateMode) {
+      return { name: inputValue };
+    }
+
+    // In edit mode, return a temporary ingredient object with just the name
+    // The parent component (RecipeDetail) will handle adding it to the recipe
+    // via addIngredientToRecipe, which creates the ingredient if needed
+    return { name: inputValue, id: `temp-${Date.now()}` };
   };
 
   const handleSaveNotes = () => {
@@ -115,7 +109,7 @@ export default function RecipeEditor({
             items={ingredients}
             onChange={handleIngredientsChange}
             suggestions={ingredientSuggestions}
-            getKey={(i) => i.id}
+            getKey={(i) => i.id || i.name}
             getLabel={(i) => i.name}
             onCreateNew={handleCreateIngredient}
             placeholder="type ingredient name, press enter to add"
@@ -135,9 +129,9 @@ export default function RecipeEditor({
             ) : (
               ingredients.map((ingredient) => (
                 <span
-                  key={ingredient.id}
+                  key={ingredient.id || ingredient.name}
                   onClick={
-                    showNeededIndicator && onIngredientToggleNeeded
+                    showNeededIndicator && onIngredientToggleNeeded && ingredient.id
                       ? (e) => {
                           e.stopPropagation();
                           onIngredientToggleNeeded(ingredient.id);
@@ -200,45 +194,6 @@ export default function RecipeEditor({
               <p className="text-text whitespace-pre-wrap">{notes}</p>
             ) : (
               <p className="text-muted font-mono">click to add notes</p>
-            )}
-          </div>
-        )}
-      </section>
-
-      {/* Tags Section */}
-      <section className="mb-8">
-        <h3 className="font-mono text-[11px] text-muted uppercase tracking-wider mb-3">
-          Tags
-        </h3>
-        {isEditingTags ? (
-          <TagInput
-            selectedTags={editingTags}
-            onChange={(newTags) => {
-              setEditingTags(newTags);
-              onTagsChange(newTags);
-            }}
-            onClose={() => setIsEditingTags(false)}
-            autoFocus
-          />
-        ) : (
-          <div
-            onClick={() => {
-              setEditingTags(tags);
-              setIsEditingTags(true);
-            }}
-            className="flex flex-wrap gap-2 cursor-pointer border border-border rounded-lg px-3 py-2.5 transition-colors duration-500 hover:border-muted"
-          >
-            {tags.length > 0 ? (
-              tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center gap-1 bg-background border border-border rounded px-2 py-1 text-sm text-text lowercase"
-                >
-                  {tag}
-                </span>
-              ))
-            ) : (
-              <p className="text-muted font-mono text-sm">click to add tags</p>
             )}
           </div>
         )}

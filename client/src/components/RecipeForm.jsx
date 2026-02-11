@@ -1,36 +1,30 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCreateRecipe, useAddIngredientToRecipe } from "../state";
+import { useCreateRecipe } from "../state";
 import RecipeEditor from "./RecipeEditor.jsx";
 import { Button } from "./common";
 
 export default function RecipeForm({ onClose }) {
   const navigate = useNavigate();
   const createRecipe = useCreateRecipe();
-  const addIngredientToRecipe = useAddIngredientToRecipe();
 
   const [name, setName] = useState("");
   const [notes, setNotes] = useState("");
-  const [tags, setTags] = useState([]);
   const [ingredients, setIngredients] = useState([]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name.trim()) return;
 
-    // Create recipe
+    // Create recipe with ingredients array
     createRecipe.mutate(
-      { name: name.trim(), notes, tags: tags.join(",") },
+      {
+        name: name.trim(),
+        notes,
+        ingredients: ingredients.map(i => i.name),
+      },
       {
         onSuccess: (recipe) => {
-          // Add ingredients to recipe
-          ingredients.forEach((ingredient) => {
-            addIngredientToRecipe.mutate({
-              recipeId: recipe.id,
-              ingredientId: ingredient.id,
-            });
-          });
-
           navigate(`/recipes/${recipe.id}`);
           onClose();
         },
@@ -51,13 +45,12 @@ export default function RecipeForm({ onClose }) {
             onNameChange={setName}
             notes={notes}
             onNotesChange={setNotes}
-            tags={tags}
-            onTagsChange={setTags}
             ingredients={ingredients}
             onIngredientsChange={setIngredients}
             showNeededIndicator={false}
             namePlaceholder="recipe name"
             nameEditable={true}
+            isCreateMode={true}
           />
 
           {/* Actions */}

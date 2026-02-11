@@ -1,9 +1,21 @@
-const API_BASE = "http://localhost:3001/api";
+const API_BASE = "https://the404.marlin-peacock.ts.net:3001/pantry";
 
 export const api = {
   async getIngredients() {
     const res = await fetch(`${API_BASE}/ingredients`);
     if (!res.ok) throw new Error("Failed to fetch ingredients");
+    return res.json();
+  },
+
+  async getIngredient(id) {
+    const res = await fetch(`${API_BASE}/ingredients/${id}`);
+    if (!res.ok) throw new Error("Failed to fetch ingredient");
+    return res.json();
+  },
+
+  async getCategories() {
+    const res = await fetch(`${API_BASE}/ingredients/categories`);
+    if (!res.ok) throw new Error("Failed to fetch categories");
     return res.json();
   },
 
@@ -32,29 +44,75 @@ export const api = {
       method: "DELETE",
     });
     if (!res.ok) throw new Error("Failed to delete ingredient");
-    return res.json();
+    return null;
   },
 
   async getRecipes() {
     const res = await fetch(`${API_BASE}/recipes`);
     if (!res.ok) throw new Error("Failed to fetch recipes");
-    return res.json();
+    const recipes = await res.json();
+
+    // Expand ingredient_ids to full ingredient objects
+    const recipesWithIngredients = await Promise.all(
+      recipes.map(async (recipe) => {
+        if (!recipe.ingredient_ids || recipe.ingredient_ids.length === 0) {
+          return { ...recipe, ingredients: [] };
+        }
+
+        const ingredients = await Promise.all(
+          recipe.ingredient_ids.map(id => api.getIngredient(id))
+        );
+
+        return { ...recipe, ingredients };
+      })
+    );
+
+    return recipesWithIngredients;
   },
 
   async getRecipe(id) {
     const res = await fetch(`${API_BASE}/recipes/${id}`);
     if (!res.ok) throw new Error("Failed to fetch recipe");
-    return res.json();
+    const recipe = await res.json();
+
+    // Expand ingredient_ids to full ingredient objects
+    if (!recipe.ingredient_ids || recipe.ingredient_ids.length === 0) {
+      return { ...recipe, ingredients: [] };
+    }
+
+    const ingredients = await Promise.all(
+      recipe.ingredient_ids.map(ingredientId => api.getIngredient(ingredientId))
+    );
+
+    return { ...recipe, ingredients };
   },
 
   async createRecipe(recipe) {
+    // API expects ingredients as an array of names, not objects
+    const payload = {
+      name: recipe.name,
+      notes: recipe.notes || "",
+      ingredients: recipe.ingredients || [],
+    };
+
     const res = await fetch(`${API_BASE}/recipes`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(recipe),
+      body: JSON.stringify(payload),
     });
     if (!res.ok) throw new Error("Failed to create recipe");
-    return res.json();
+    const createdRecipe = await res.json();
+
+    // Expand ingredient_ids to full ingredient objects for consistency
+    if (!createdRecipe.ingredient_ids || createdRecipe.ingredient_ids.length === 0) {
+      return { ...createdRecipe, ingredients: [] };
+    }
+
+    const ingredients = await Promise.all(
+      createdRecipe.ingredient_ids.map(id => api.getIngredient(id))
+    );
+
+    return { ...createdRecipe, ingredients };
   },
 
   async updateRecipe({ id, ...fields }) {
@@ -72,21 +130,21 @@ export const api = {
       method: "DELETE",
     });
     if (!res.ok) throw new Error("Failed to delete recipe");
-    return res.json();
+    return null;
   },
 
-  async addIngredientToRecipe({ recipeId, ingredientId }) {
+  async addIngredientToRecipe({ recipeId, ingredientName }) {
     const res = await fetch(
-      `${API_BASE}/recipes/${recipeId}/ingredients/${ingredientId}`,
-      { method: "PUT" },
+      `${API_BASE}/recipes/${recipeId}/ingredients?name=${encodeURIComponent(ingredientName)}`,
+      { method: "POST" },
     );
     if (!res.ok) throw new Error("Failed to link ingredient to recipe");
     return res.json();
   },
 
-  async removeIngredientFromRecipe({ recipeId, ingredientId }) {
+  async removeIngredientFromRecipe({ recipeId, ingredientName }) {
     const res = await fetch(
-      `${API_BASE}/recipes/${recipeId}/ingredients/${ingredientId}`,
+      `${API_BASE}/recipes/${recipeId}/ingredients?ingredient=${encodeURIComponent(ingredientName)}`,
       { method: "DELETE" },
     );
     if (!res.ok) throw new Error("Failed to unlink ingredient from recipe");

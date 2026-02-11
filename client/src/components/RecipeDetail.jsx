@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   useRecipe,
@@ -11,7 +10,6 @@ import {
 } from "../state";
 import RecipeEditor from "./RecipeEditor.jsx";
 import { Button, BackLink } from "./common";
-import { parseTags } from "../utils/tags.js";
 
 export default function RecipeDetail() {
   const { id } = useParams();
@@ -24,11 +22,6 @@ export default function RecipeDetail() {
   const addIngredientToRecipe = useAddIngredientToRecipe();
   const removeIngredientFromRecipe = useRemoveIngredientFromRecipe();
   const toggleNeeded = useToggleNeeded();
-
-  // Parse tags from comma-separated string to array
-  const parsedTags = useMemo(() => {
-    return parseTags(recipe?.tags).map((t) => t.toLowerCase());
-  }, [recipe?.tags]);
 
   // API returns ingredients embedded in recipe
   const ingredients = recipe?.ingredients || [];
@@ -56,10 +49,6 @@ export default function RecipeDetail() {
     updateRecipe.mutate({ id, notes: newNotes });
   };
 
-  const handleTagsChange = (newTags) => {
-    updateRecipe.mutate({ id, tags: newTags.join(",") });
-  };
-
   const handleIngredientsChange = (newIngredients) => {
     const newIds = new Set(newIngredients.map((i) => i.id));
     const oldIds = new Set(ingredients.map((i) => i.id));
@@ -67,14 +56,14 @@ export default function RecipeDetail() {
     // Find added ingredients
     for (const ingredient of newIngredients) {
       if (!oldIds.has(ingredient.id)) {
-        addIngredientToRecipe.mutate({ recipeId: id, ingredientId: ingredient.id });
+        addIngredientToRecipe.mutate({ recipeId: id, ingredientName: ingredient.name });
       }
     }
 
     // Find removed ingredients
     for (const ingredient of ingredients) {
       if (!newIds.has(ingredient.id)) {
-        removeIngredientFromRecipe.mutate({ recipeId: id, ingredientId: ingredient.id });
+        removeIngredientFromRecipe.mutate({ recipeId: id, ingredientName: ingredient.name });
       }
     }
   };
@@ -89,7 +78,13 @@ export default function RecipeDetail() {
   const handleDelete = () => {
     if (window.confirm("delete this recipe?")) {
       deleteRecipe.mutate(id, {
-        onSuccess: () => navigate("/recipes"),
+        onSuccess: () => {
+          navigate("/recipes");
+        },
+        onError: (error) => {
+          console.error("Failed to delete recipe:", error);
+          alert("Failed to delete recipe. Please try again.");
+        },
       });
     }
   };
@@ -103,8 +98,6 @@ export default function RecipeDetail() {
         onNameChange={handleNameChange}
         notes={recipe.notes || ""}
         onNotesChange={handleNotesChange}
-        tags={parsedTags}
-        onTagsChange={handleTagsChange}
         ingredients={ingredients}
         onIngredientsChange={handleIngredientsChange}
         onIngredientToggleNeeded={handleToggleNeeded}
