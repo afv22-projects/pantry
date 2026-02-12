@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.2.0](https://github.com/afv22-projects/pantry/compare/v1.1.0...v1.2.0) (2026-02-12)
+
+
+### Features
+
+* add consumables tab with full CRUD functionality ([88249ef](https://github.com/afv22-projects/pantry/commit/88249efa6944953e05d2db3ad6db08b541b58aaa))
+* improve tab spacing; remove x icon from grocery list cards ([db2f45d](https://github.com/afv22-projects/pantry/commit/db2f45d760aa1f56cd769f9654a48858a993e696))
+* include consumables in grocery list ([72135b1](https://github.com/afv22-projects/pantry/commit/72135b19fccca17e593f6efd2861474933841a6e))
+
+
+### Bug Fixes
+
+* use common button component in source card ([52f27c7](https://github.com/afv22-projects/pantry/commit/52f27c71b33733aebeed045e37f7e9c072703247))
+
 ## [1.1.0](https://github.com/afv22-projects/pantry/compare/v1.0.2...v1.1.0) (2026-02-11)
 
 
