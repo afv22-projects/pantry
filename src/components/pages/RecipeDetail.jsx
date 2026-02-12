@@ -9,9 +9,9 @@ import {
   useToggleNeeded,
   useAddSourceToRecipe,
   useRemoveSourceFromRecipe,
-} from "../state/index.js";
-import RecipeEditor from "./RecipeEditor.jsx";
-import { Button, BackLink, Loading } from "./common/index.jsx";
+} from "../../state/index.js";
+import RecipeEditor from "../features/RecipeEditor.jsx";
+import { Button, BackLink, Loading } from "../common/index.jsx";
 
 const styles = {
   missingRecipe: "text-muted font-mono text-sm",

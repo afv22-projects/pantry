@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useIngredients, useToggleNeeded } from "../state";
-import { Button, Card, Loading, GroupedList, ErrorMessage } from "./common";
-import { CheckmarkIcon } from "./icons";
-import IngredientForm from "./IngredientForm.jsx";
+import { useIngredients, useToggleNeeded } from "../../state";
+import { Button, Card, Loading, GroupedList, ErrorMessage } from "../common";
+import { CheckmarkIcon } from "../icons";
+import IngredientForm from "../features/IngredientForm.jsx";
 
 const styles = {
   card: "flex items-center justify-between",

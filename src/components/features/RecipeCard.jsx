@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Card } from "./common";
+import { Card } from "../common";
 
 const styles = {
   card: "p-5",

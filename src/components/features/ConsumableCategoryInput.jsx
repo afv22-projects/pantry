@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { useConsumableCategories, useConsumables } from "../state";
-import Dropdown from "./common/Dropdown";
+import { useConsumableCategories, useConsumables } from "../../state";
+import Dropdown from "../common/Dropdown";
 
 export default function ConsumableCategoryInput({ value, onChange }) {
   const { data: canonicalCategories = [] } = useConsumableCategories();

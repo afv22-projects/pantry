@@ -1,4 +1,4 @@
-import { Button, Card, EmptyState, Loading, BackLink } from "./common";
+import { Button, Card, EmptyState, Loading, BackLink } from "../common";
 import { Link } from "react-router-dom";
 
 const styles = {

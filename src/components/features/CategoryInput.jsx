@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { useCategories, useIngredients } from "../state";
-import Dropdown from "./common/Dropdown";
+import { useCategories, useIngredients } from "../../state";
+import Dropdown from "../common/Dropdown";
 
 export default function CategoryInput({ value, onChange }) {
   const { data: canonicalCategories = [] } = useCategories();

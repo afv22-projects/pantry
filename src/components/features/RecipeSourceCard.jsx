@@ -1,5 +1,5 @@
-import { Button } from "./common/index.jsx";
-import DeleteIcon from "./icons/DeleteIcon.jsx";
+import { Button } from "../common/index.jsx";
+import DeleteIcon from "../icons/DeleteIcon.jsx";
 
 const styles = {
   sourceCard:

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useCreateConsumable } from "../state/index.js";
+import { useCreateConsumable } from "../../state/index.js";
 import ConsumableCategoryInput from "./ConsumableCategoryInput.jsx";
-import { Button, Modal } from "./common/index.jsx";
+import { Button, Modal } from "../common/index.jsx";
 
 const styles = {
   nameContainer: "mb-4",

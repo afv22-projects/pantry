@@ -6,9 +6,9 @@ import {
   useToggleNeeded,
   useUpdateIngredient,
   useDeleteIngredient,
-} from "../state";
-import CategoryInput from "./CategoryInput";
-import ItemDetail from "./ItemDetail";
+} from "../../state";
+import CategoryInput from "../features/CategoryInput";
+import ItemDetail from "../features/ItemDetail";
 
 export default function IngredientDetail() {
   const { id } = useParams();

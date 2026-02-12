@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useConsumables, useToggleConsumableNeeded } from "../state";
-import { Button, Card, GroupedList } from "./common";
-import { CheckmarkIcon } from "./icons";
-import ConsumableForm from "./ConsumableForm.jsx";
+import { useConsumables, useToggleConsumableNeeded } from "../../state";
+import { Button, Card, GroupedList } from "../common";
+import { CheckmarkIcon } from "../icons";
+import ConsumableForm from "../features/ConsumableForm.jsx";
 
 export default function ConsumablesList() {
   const { data: consumables, isLoading, isError } = useConsumables();

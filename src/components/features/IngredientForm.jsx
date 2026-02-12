@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCreateIngredient } from "../state/index.js";
+import { useCreateIngredient } from "../../state/index.js";
 import CategoryInput from "./CategoryInput.jsx";
-import { Button, Modal } from "./common/index.jsx";
+import { Button, Modal } from "../common/index.jsx";
 
 const styles = {
   nameContainer: "mb-4",

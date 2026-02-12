@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button } from "./common/index.jsx";
+import { Button } from "../common/index.jsx";
 
 const styles = {
   container: "bg-surface border border-border rounded-lg p-3",

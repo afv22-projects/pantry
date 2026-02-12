@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useIngredients } from "../state/index.js";
+import { useIngredients } from "../../state/index.js";
 import ChipInput from "./ChipInput.jsx";
 import NotesEditor from "./NotesEditor.jsx";
 import RecipeSourceCard from "./RecipeSourceCard.jsx";

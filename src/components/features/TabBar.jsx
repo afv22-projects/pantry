@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { useIngredients, useConsumables } from "../state";
+import { useIngredients, useConsumables } from "../../state";
 
 const styles = {
   nav: "flex",

@@ -4,9 +4,9 @@ import {
   useToggleConsumableNeeded,
   useUpdateConsumable,
   useDeleteConsumable,
-} from "../state";
-import ConsumableCategoryInput from "./ConsumableCategoryInput";
-import ItemDetail from "./ItemDetail";
+} from "../../state";
+import ConsumableCategoryInput from "../features/ConsumableCategoryInput";
+import ItemDetail from "../features/ItemDetail";
 
 export default function ConsumableDetail() {
   const { id } = useParams();

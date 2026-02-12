@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button } from "./common/index.jsx";
+import { Button } from "../common/index.jsx";
 
 const styles = {
   container: "mb-8",

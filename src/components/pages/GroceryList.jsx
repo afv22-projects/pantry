@@ -4,9 +4,9 @@ import {
   useToggleNeeded,
   useConsumables,
   useToggleConsumableNeeded,
-} from "../state";
-import { Button, Card, EmptyState, GroupedList } from "./common";
-import { CheckmarkIcon } from "./icons";
+} from "../../state";
+import { Button, Card, EmptyState, GroupedList } from "../common";
+import { CheckmarkIcon } from "../icons";
 
 export default function GroceryList() {
   const {
