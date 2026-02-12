@@ -2,8 +2,8 @@ import { useState, useMemo } from "react";
 import { useIngredients } from "../state/index.js";
 import ChipInput from "./ChipInput.jsx";
 import NotesEditor from "./NotesEditor.jsx";
-import { Button } from "./common/index.jsx";
-import DeleteIcon from "./icons/DeleteIcon.jsx";
+import RecipeSourceCard from "./RecipeSourceCard.jsx";
+import RecipeSourceInput from "./RecipeSourceInput.jsx";
 
 const styles = {
   nameContainer: "mb-6",
@@ -14,80 +14,13 @@ const styles = {
   ingredientsContainer: "mb-8",
   ingredientsTitle:
     "font-mono text-[11px] text-muted uppercase tracking-wider mb-3",
-  ingredientsDisplay:
-    "flex flex-wrap gap-2 cursor-pointer border border-border rounded-lg px-3 py-2.5 transition-colors duration-500 hover:border-muted",
-  ingredientsPlaceholder: "text-muted font-mono text-sm",
   ingredientChip:
     "inline-flex items-center gap-1 bg-background border border-border rounded px-2 py-1 text-sm text-text lowercase cursor-pointer",
   ingredientNeeded: "w-2 h-2 rounded-full bg-accent",
   sourceContainer: "mb-8",
   sourceTitle: "font-mono text-[11px] text-muted uppercase tracking-wider mb-3",
   sourceList: "space-y-3 mb-3",
-  sourceCard:
-    "bg-surface border border-border rounded-lg p-4 flex items-center justify-between group hover:border-muted transition-colors",
-  sourceLink: "text-text hover:underline text-sm truncate flex-1 min-w-0",
-  sourceInputContainer: "bg-surface border border-border rounded-lg p-3",
-  sourceInputField:
-    "w-full bg-background border border-border rounded px-3 py-2 text-text text-sm focus:outline-none focus:border-muted mb-3",
-  sourceInputButtons: "flex gap-2",
-  sourceAddButton:
-    "w-full bg-surface border border-border rounded-lg p-3 text-muted font-mono text-sm hover:border-muted transition-colors text-left",
 };
-
-function SourceCard({ onRemoveSource, source, index }) {
-  return (
-    <div key={index} className={styles.sourceCard}>
-      <a
-        href={source}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={styles.sourceLink}
-      >
-        {source}
-      </a>
-      <Button
-        onClick={() => onRemoveSource(source)}
-        variant="icon"
-        aria-label="Delete source"
-      >
-        <DeleteIcon />
-      </Button>
-    </div>
-  );
-}
-
-function SourceInput({
-  sourceUrl,
-  setSourceUrl,
-  handleAddSource,
-  handleCancelAddSource,
-}) {
-  return (
-    <div className={styles.sourceInputContainer}>
-      <input
-        type="url"
-        value={sourceUrl}
-        onChange={(e) => setSourceUrl(e.target.value)}
-        placeholder="paste url"
-        className={styles.sourceInputField}
-        autoFocus
-      />
-      <div className={styles.sourceInputButtons}>
-        <Button
-          variant="primary"
-          size="sm"
-          onClick={handleAddSource}
-          disabled={!sourceUrl.trim()}
-        >
-          add
-        </Button>
-        <Button variant="secondary" size="sm" onClick={handleCancelAddSource}>
-          cancel
-        </Button>
-      </div>
-    </div>
-  );
-}
 
 export default function RecipeEditor({
   name,
@@ -107,10 +40,7 @@ export default function RecipeEditor({
 }) {
   const { data: allIngredients } = useIngredients();
 
-  const [isEditingIngredients, setIsEditingIngredients] = useState(false);
   const [ingredientInput, setIngredientInput] = useState("");
-  const [isAddingSource, setIsAddingSource] = useState(false);
-  const [sourceUrl, setSourceUrl] = useState("");
 
   // Get ingredient IDs or names for filtering suggestions
   const ingredientIdentifiers = useMemo(
@@ -157,17 +87,25 @@ export default function RecipeEditor({
     return { name: inputValue, id: `temp-${Date.now()}` };
   };
 
-  const handleAddSource = () => {
-    if (!sourceUrl.trim()) return;
-    onAddSource(sourceUrl.trim());
-    setSourceUrl("");
-    setIsAddingSource(false);
-  };
-
-  const handleCancelAddSource = () => {
-    setSourceUrl("");
-    setIsAddingSource(false);
-  };
+  const renderIngredientChip = showNeededIndicator
+    ? (ingredient, key) => (
+        <span
+          key={key}
+          onClick={
+            onIngredientToggleNeeded && ingredient.id
+              ? (e) => {
+                  e.stopPropagation();
+                  onIngredientToggleNeeded(ingredient.id);
+                }
+              : undefined
+          }
+          className={styles.ingredientChip}
+        >
+          {ingredient.needed && <span className={styles.ingredientNeeded} />}
+          {ingredient.name}
+        </span>
+      )
+    : undefined;
 
   return (
     <>
@@ -190,56 +128,19 @@ export default function RecipeEditor({
         )}
       </section>
 
-      {/* TODO: Bundle static mode into ChipInput */}
       <section className={styles.ingredientsContainer}>
         <h3 className={styles.ingredientsTitle}>Ingredients</h3>
-        {isEditingIngredients ? (
-          <ChipInput
-            items={ingredients}
-            onChange={(newIngredients) => onIngredientsChange(newIngredients)}
-            suggestions={ingredientSuggestions}
-            getKey={(i) => i.id || i.name}
-            getLabel={(i) => i.name}
-            onCreateNew={handleCreateIngredient}
-            placeholder="type ingredient name, press enter to add"
-            onInputChange={setIngredientInput}
-            onClose={() => setIsEditingIngredients(false)}
-            autoFocus
-          />
-        ) : (
-          <div
-            onClick={() => setIsEditingIngredients(true)}
-            className={styles.ingredientsDisplay}
-          >
-            {ingredients.length === 0 ? (
-              <p className={styles.ingredientsPlaceholder}>
-                click to add ingredients
-              </p>
-            ) : (
-              ingredients.map((ingredient) => (
-                <span
-                  key={ingredient.id || ingredient.name}
-                  onClick={
-                    showNeededIndicator &&
-                    onIngredientToggleNeeded &&
-                    ingredient.id
-                      ? (e) => {
-                          e.stopPropagation();
-                          onIngredientToggleNeeded(ingredient.id);
-                        }
-                      : undefined
-                  }
-                  className={styles.ingredientChip}
-                >
-                  {showNeededIndicator && ingredient.needed && (
-                    <span className={styles.ingredientNeeded} />
-                  )}
-                  {ingredient.name}
-                </span>
-              ))
-            )}
-          </div>
-        )}
+        <ChipInput
+          items={ingredients}
+          onChange={onIngredientsChange}
+          suggestions={ingredientSuggestions}
+          getKey={(i) => i.id || i.name}
+          getLabel={(i) => i.name}
+          onCreateNew={handleCreateIngredient}
+          placeholder="click to add ingredients"
+          onInputChange={setIngredientInput}
+          renderChip={renderIngredientChip}
+        />
       </section>
 
       <NotesEditor notes={notes} onNotesChange={onNotesChange} />
@@ -250,25 +151,16 @@ export default function RecipeEditor({
           {sources.length > 0 && (
             <div className={styles.sourceList}>
               {sources.map((source, index) => (
-                <SourceCard source={source} index={index} />
+                <RecipeSourceCard
+                  key={index}
+                  source={source}
+                  index={index}
+                  onRemoveSource={onRemoveSource}
+                />
               ))}
             </div>
           )}
-          {isAddingSource ? (
-            <SourceInput
-              sourceUrl={sourceUrl}
-              setSourceUrl={setSourceUrl}
-              handleAddSource={handleAddSource}
-              handleCancelAddSource={handleCancelAddSource}
-            />
-          ) : (
-            <button
-              onClick={() => setIsAddingSource(true)}
-              className={styles.sourceAddButton}
-            >
-              click to add source
-            </button>
-          )}
+          <RecipeSourceInput onAddSource={onAddSource} />
         </section>
       )}
     </>

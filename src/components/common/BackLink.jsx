@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-styles = {
+const styles = {
   link: "inline-flex items-center gap-1 text-muted font-mono text-sm mb-4 hover:text-text transition-colors",
 };
 

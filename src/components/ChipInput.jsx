@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 
 const styles = {
-  chipContainer:
-    "flex flex-wrap gap-2 bg-surface border border-border rounded-lg px-3 py-2.5 cursor-text transition-colors duration-500 hover:border-muted focus-within:border-muted",
-  chipButtonsContainer:
-    "inline-flex items-center gap-1 bg-background border border-border rounded px-2 py-1 text-sm text-text lowercase",
-  chipButtonText: "text-muted hover:text-text ml-1",
+  container:
+    "flex flex-wrap gap-2 border border-border rounded-lg px-3 py-2.5 transition-colors duration-500 hover:border-muted",
+  containerEditing: "bg-surface cursor-text focus-within:border-muted",
+  containerStatic: "cursor-pointer",
+  chip: "inline-flex items-center gap-1 bg-background border border-border rounded px-2 py-1 text-sm text-text lowercase",
+  chipRemove: "text-muted hover:text-text ml-1",
+  placeholder: "text-muted font-mono text-sm",
   suggestionsContainer:
     "absolute top-full left-0 right-0 mt-1 bg-surface border border-border rounded-lg overflow-hidden z-10",
   suggestion:
@@ -19,20 +21,20 @@ export default function ChipInput({
   getKey = (item) => item,
   getLabel = (item) => item,
   onCreateNew,
-  placeholder = "type to add...",
+  placeholder = "click to add...",
   onInputChange,
-  onClose,
-  autoFocus = false,
+  renderChip,
 }) {
+  const [isEditing, setIsEditing] = useState(false);
   const [input, setInput] = useState("");
   const inputRef = useRef(null);
   const containerRef = useRef(null);
 
   useEffect(() => {
-    if (autoFocus) {
+    if (isEditing) {
       inputRef.current?.focus();
     }
-  }, [autoFocus]);
+  }, [isEditing]);
 
   useEffect(() => {
     onInputChange?.(input);
@@ -72,18 +74,40 @@ export default function ChipInput({
 
   const handleBlur = (e) => {
     if (!containerRef.current?.contains(e.relatedTarget)) {
-      onClose?.();
+      setIsEditing(false);
     }
   };
+
+  const containerClass = `${styles.container} ${isEditing ? styles.containerEditing : styles.containerStatic}`;
+
+  if (!isEditing) {
+    return (
+      <div onClick={() => setIsEditing(true)} className={containerClass}>
+        {items.length === 0 ? (
+          <p className={styles.placeholder}>{placeholder}</p>
+        ) : (
+          items.map((item) =>
+            renderChip ? (
+              renderChip(item, getKey(item))
+            ) : (
+              <span key={getKey(item)} className={styles.chip}>
+                {getLabel(item)}
+              </span>
+            ),
+          )
+        )}
+      </div>
+    );
+  }
 
   return (
     <div ref={containerRef} className="relative" onBlur={handleBlur}>
       <div
         onClick={() => inputRef.current?.focus()}
-        className={styles.chipContainer}
+        className={containerClass}
       >
         {items.map((item) => (
-          <span key={getKey(item)} className={styles.chipButtonsContainer}>
+          <span key={getKey(item)} className={styles.chip}>
             {getLabel(item)}
             <button
               type="button"
@@ -91,7 +115,7 @@ export default function ChipInput({
                 e.stopPropagation();
                 handleRemove(item);
               }}
-              className={styles.chipButtonText}
+              className={styles.chipRemove}
             >
               &times;
             </button>
