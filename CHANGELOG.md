@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.0](https://github.com/afv22-projects/pantry/compare/v1.3.0...v1.4.0) (2026-02-12)
+
+
+### Features
+
+* add markdown support to recipe notes ([9f685bb](https://github.com/afv22-projects/pantry/commit/9f685bbfac0e94aa08ca51102c1490ee35b71383))
+* create md editor ([dbfd7a1](https://github.com/afv22-projects/pantry/commit/dbfd7a172fef06eae6aeb9bca40c91baa96d3a2e))
+
 ## [1.3.0](https://github.com/afv22-projects/pantry/compare/v1.2.0...v1.3.0) (2026-02-12)
 
 
