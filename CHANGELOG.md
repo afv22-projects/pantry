@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.3.0](https://github.com/afv22-projects/pantry/compare/v1.2.0...v1.3.0) (2026-02-12)
+
+
+### Features
+
+* add source input to recipe creation form ([cd95c0e](https://github.com/afv22-projects/pantry/commit/cd95c0ea0e591c3f49cdf294170fdc634bb45548))
+* adjust spacing on recipes page ([50fc798](https://github.com/afv22-projects/pantry/commit/50fc7982d921d4933d220606e4c9d45bde8d10c5))
+* cluster grouped list items ([578a123](https://github.com/afv22-projects/pantry/commit/578a12346135a3ce186c0653d8af88a2b1ef0097))
+* remove custom category support ([872ea8b](https://github.com/afv22-projects/pantry/commit/872ea8b52dd2654efff3219c8ed8bb811c806c3f))
+
+
+### Bug Fixes
+
+* overlay scroll to reduce jitter ([6c85175](https://github.com/afv22-projects/pantry/commit/6c8517514f279559aa0d52b72bebbe5aba3c33bc))
+
 ## [1.2.0](https://github.com/afv22-projects/pantry/compare/v1.1.0...v1.2.0) (2026-02-12)
 
 
