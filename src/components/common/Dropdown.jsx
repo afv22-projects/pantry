@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const styles = {
   container: "relative",
@@ -19,19 +19,16 @@ const styles = {
   option: "w-full text-left px-3 py-2 text-sm hover:bg-border/50",
   optionSelected: "text-accent",
   optionUnselected: "text-text",
-  createOption:
-    "w-full text-left px-3 py-2 text-sm text-accent hover:bg-border/50",
   noOptions: "px-3 py-2 text-sm text-muted",
 };
 
 export default function Dropdown({
   value,
   placeholder = "select...",
-  searchPlaceholder = "search or create...",
+  searchPlaceholder = "search...",
   options = [],
   onSelect,
   onClear,
-  allowCreate = false,
   renderValue,
   renderOption,
   filterOptions,
@@ -39,6 +36,24 @@ export default function Dropdown({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+        setInput("");
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
 
   const defaultFilterOptions = (opts, searchInput) => {
     if (!searchInput.trim()) return opts;
@@ -60,7 +75,7 @@ export default function Dropdown({
   const handleInputKeyDown = (e) => {
     if (e.key === "Enter" && input.trim()) {
       e.preventDefault();
-      if (allowCreate || filteredOptions.includes(input.trim())) {
+      if (filteredOptions.includes(input.trim())) {
         handleSelect(input.trim());
       }
     } else if (e.key === "Escape") {
@@ -81,7 +96,7 @@ export default function Dropdown({
   const showClearButton = value && onClear;
 
   return (
-    <div className={`${styles.container} ${className}`}>
+    <div ref={dropdownRef} className={`${styles.container} ${className}`}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
@@ -149,14 +164,6 @@ export default function Dropdown({
                   {renderOption ? renderOption(option) : option}
                 </button>
               ))
-            ) : input.trim() && allowCreate ? (
-              <button
-                type="button"
-                onClick={() => handleSelect(input.trim())}
-                className={styles.createOption}
-              >
-                create "{input.trim()}"
-              </button>
             ) : (
               <div className={styles.noOptions}>no options found</div>
             )}

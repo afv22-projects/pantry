@@ -5,8 +5,21 @@ import {
   useConsumables,
   useToggleConsumableNeeded,
 } from "../../state";
-import { Button, Card, EmptyState, GroupedList } from "../common";
+import {
+  Button,
+  Card,
+  EmptyState,
+  GroupedList,
+  Loading,
+  ErrorMessage,
+} from "../common";
 import { CheckmarkIcon } from "../icons";
+
+const styles = {
+  cardContainer: "flex items-center justify-between",
+  itemContent: "flex items-center gap-3",
+  itemName: "text-text lowercase",
+};
 
 export default function GroceryList() {
   const {
@@ -38,23 +51,15 @@ export default function GroceryList() {
     return [...neededIngredients, ...neededConsumables];
   }, [ingredients, consumables]);
 
-  if (ingredientsLoading || consumablesLoading) {
-    return <div className="text-muted font-mono">loading...</div>;
-  }
-
+  if (ingredientsLoading || consumablesLoading) return <Loading />;
   if (ingredientsError || consumablesError) {
-    return (
-      <div className="text-red-500 font-mono">error loading grocery list</div>
-    );
+    return <ErrorMessage>error loading grocery list</ErrorMessage>;
   }
 
   if (neededItems.length === 0) {
-    return (
-      <EmptyState
-        message="no items needed. mark ingredients from recipes or the ingredients/consumables tabs."
-        centered
-      />
-    );
+    const emptyMsg =
+      "no items needed. mark ingredients from recipes or the ingredients/consumables tabs.";
+    return <EmptyState message={emptyMsg} centered />;
   }
 
   const handleToggle = (item) => {
@@ -72,9 +77,9 @@ export default function GroceryList() {
       renderItem={(item) => (
         <Card
           key={`${item.type}-${item.id}`}
-          className="flex items-center justify-between"
+          className={styles.cardContainer}
         >
-          <div className="flex items-center gap-3">
+          <div className={styles.itemContent}>
             <Button
               variant="checkbox"
               active={true}
@@ -82,7 +87,7 @@ export default function GroceryList() {
             >
               <CheckmarkIcon />
             </Button>
-            <span className="text-text lowercase">{item.name}</span>
+            <span className={styles.itemName}>{item.name}</span>
           </div>
         </Card>
       )}

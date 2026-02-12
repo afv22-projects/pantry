@@ -1,9 +1,18 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useConsumables, useToggleConsumableNeeded } from "../../state";
-import { Button, Card, GroupedList } from "../common";
+import { Button, Card, GroupedList, Loading, ErrorMessage } from "../common";
 import { CheckmarkIcon } from "../icons";
 import ConsumableForm from "../features/ConsumableForm.jsx";
+
+const styles = {
+  loading: "text-muted font-mono",
+  error: "text-red-500 font-mono",
+  cardContainer: "flex items-center justify-between",
+  itemContent: "flex items-center gap-3",
+  itemName: "text-text lowercase",
+  arrow: "text-muted",
+};
 
 export default function ConsumablesList() {
   const { data: consumables, isLoading, isError } = useConsumables();
@@ -16,15 +25,8 @@ export default function ConsumablesList() {
     toggleNeeded.mutate(consumable);
   };
 
-  if (isLoading) {
-    return <div className="text-muted font-mono">loading...</div>;
-  }
-
-  if (isError) {
-    return (
-      <div className="text-red-500 font-mono">error loading consumables</div>
-    );
-  }
+  if (isLoading) return <Loading />;
+  if (isError) return <ErrorMessage>error loading consumables</ErrorMessage>;
 
   return (
     <>
@@ -37,9 +39,9 @@ export default function ConsumablesList() {
             key={consumable.id}
             as={Link}
             to={`/consumables/${consumable.id}`}
-            className="flex items-center justify-between"
+            className={styles.cardContainer}
           >
-            <div className="flex items-center gap-3">
+            <div className={styles.itemContent}>
               <Button
                 variant="checkbox"
                 active={consumable.needed}
@@ -47,9 +49,9 @@ export default function ConsumablesList() {
               >
                 {consumable.needed && <CheckmarkIcon />}
               </Button>
-              <span className="text-text lowercase">{consumable.name}</span>
+              <span className={styles.itemName}>{consumable.name}</span>
             </div>
-            <span className="text-muted">&rarr;</span>
+            <span className={styles.arrow}>&rarr;</span>
           </Card>
         )}
       />
