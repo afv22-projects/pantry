@@ -67,13 +67,6 @@ export default function GroceryList() {
             </Button>
             <span className="text-text lowercase">{item.name}</span>
           </div>
-          <Button
-            variant="icon"
-            onClick={() => handleToggle(item)}
-            aria-label="Remove from grocery list"
-          >
-            <DeleteIcon />
-          </Button>
         </Card>
       )}
     />

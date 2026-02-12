@@ -10,10 +10,10 @@ export default function TabBar() {
   const groceryCount = ingredientCount + consumableCount;
 
   const tabs = [
-    { path: "/recipes", label: "recipes" },
-    { path: "/ingredients", label: "ingredients" },
-    { path: "/consumables", label: "consumables" },
-    { path: "/grocery", label: "grocery list", showBadge: true },
+    { path: "/recipes", label: "RCP" },
+    { path: "/ingredients", label: "ING" },
+    { path: "/consumables", label: "CNS" },
+    { path: "/grocery", label: "GRC", showBadge: true },
   ];
 
   return (
@@ -23,7 +23,7 @@ export default function TabBar() {
           key={tab.path}
           to={tab.path}
           className={({ isActive }) =>
-            `flex items-center gap-2 px-4 py-2.5 font-mono text-[13px] lowercase tracking-wide transition-colors ${
+            `flex items-center justify-center gap-2 px-4 py-2.5 font-mono text-[13px] lowercase tracking-wide transition-colors flex-1 ${
               isActive
                 ? "text-text border-b border-text"
                 : "text-muted hover:text-text"
