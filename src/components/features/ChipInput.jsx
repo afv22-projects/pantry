@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useClickOutside } from "../../hooks/useClickOutside";
 
 const styles = {
   container:
@@ -31,14 +32,12 @@ export default function ChipInput({
   const containerRef = useRef(null);
 
   useEffect(() => {
-    if (isEditing) {
-      inputRef.current?.focus();
-    }
+    if (isEditing) inputRef.current?.focus();
   }, [isEditing]);
 
-  useEffect(() => {
-    onInputChange?.(input);
-  }, [input, onInputChange]);
+  useEffect(() => onInputChange?.(input), [input, onInputChange]);
+
+  useClickOutside(containerRef, () => setIsEditing(false), isEditing);
 
   const handleAdd = (item) => {
     const key = getKey(item);
@@ -72,12 +71,6 @@ export default function ChipInput({
     }
   };
 
-  const handleBlur = (e) => {
-    if (!containerRef.current?.contains(e.relatedTarget)) {
-      setIsEditing(false);
-    }
-  };
-
   const containerClass = `${styles.container} ${isEditing ? styles.containerEditing : styles.containerStatic}`;
 
   if (!isEditing) {
@@ -101,11 +94,8 @@ export default function ChipInput({
   }
 
   return (
-    <div ref={containerRef} className="relative" onBlur={handleBlur}>
-      <div
-        onClick={() => inputRef.current?.focus()}
-        className={containerClass}
-      >
+    <div ref={containerRef} className="relative">
+      <div onClick={() => inputRef.current?.focus()} className={containerClass}>
         {items.map((item) => (
           <span key={getKey(item)} className={styles.chip}>
             {getLabel(item)}

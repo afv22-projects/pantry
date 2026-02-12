@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
+import { useClickOutside } from "../../hooks/useClickOutside";
 
 const styles = {
   container: "relative",
@@ -38,27 +39,19 @@ export default function Dropdown({
   const [input, setInput] = useState("");
   const dropdownRef = useRef(null);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-        setInput("");
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isOpen]);
+  useClickOutside(
+    dropdownRef,
+    () => {
+      setIsOpen(false);
+      setInput("");
+    },
+    isOpen,
+  );
 
   const defaultFilterOptions = (opts, searchInput) => {
     if (!searchInput.trim()) return opts;
     return opts.filter((opt) =>
-      opt.toLowerCase().includes(searchInput.toLowerCase())
+      opt.toLowerCase().includes(searchInput.toLowerCase()),
     );
   };
 
@@ -158,7 +151,9 @@ export default function Dropdown({
                   type="button"
                   onClick={() => handleSelect(option)}
                   className={`${styles.option} ${
-                    option === value ? styles.optionSelected : styles.optionUnselected
+                    option === value
+                      ? styles.optionSelected
+                      : styles.optionUnselected
                   }`}
                 >
                   {renderOption ? renderOption(option) : option}
