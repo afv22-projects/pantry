@@ -176,8 +176,8 @@ const markdownComponents = {
 export default function MarkdownEditor({
   value,
   onChange,
-  placeholder = "click to add notes",
-  title = "Notes",
+  placeholder,
+  title,
   rows = 4,
 }) {
   const [isEditing, setIsEditing] = useState(false);
