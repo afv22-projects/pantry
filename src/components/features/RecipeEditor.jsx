@@ -145,7 +145,7 @@ export default function RecipeEditor({
 
       <NotesEditor notes={notes} onNotesChange={onNotesChange} />
 
-      {!isCreateMode && onAddSource && onRemoveSource && (
+      {onAddSource && onRemoveSource && (
         <section className={styles.sourceContainer}>
           <h3 className={styles.sourceTitle}>Source</h3>
           {sources.length > 0 && (

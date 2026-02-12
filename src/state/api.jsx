@@ -93,6 +93,7 @@ export const api = {
       name: recipe.name,
       notes: recipe.notes || "",
       ingredients: recipe.ingredients || [],
+      sources: recipe.sources || [],
     };
 
     const res = await fetch(`${API_BASE}/recipes`, {

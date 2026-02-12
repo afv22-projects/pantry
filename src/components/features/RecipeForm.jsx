@@ -16,6 +16,7 @@ export default function RecipeForm({ onClose }) {
   const [name, setName] = useState("");
   const [notes, setNotes] = useState("");
   const [ingredients, setIngredients] = useState([]);
+  const [sources, setSources] = useState([]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -25,6 +26,7 @@ export default function RecipeForm({ onClose }) {
       name: name.trim(),
       notes,
       ingredients: ingredients.map((i) => i.name),
+      sources,
     };
 
     createRecipe.mutate(recipeDetails, {
@@ -45,6 +47,11 @@ export default function RecipeForm({ onClose }) {
           onNotesChange={setNotes}
           ingredients={ingredients}
           onIngredientsChange={setIngredients}
+          sources={sources}
+          onAddSource={(source) => setSources([...sources, source])}
+          onRemoveSource={(index) =>
+            setSources(sources.filter((_, i) => i !== index))
+          }
           showNeededIndicator={false}
           namePlaceholder="recipe name"
           nameEditable={true}
