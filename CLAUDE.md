@@ -1,19 +1,13 @@
 # Project Guidelines
 
-## Design Reference
-
-- Refer to the `mockups/` directory for design reference and UI specifications
-- Follow the design patterns and layouts shown in the mockups
-
-## Implementation Guidance
-
-- Follow the implementation plan (DESIGN.md or similar) for project structure and architecture decisions
-- Consult the plan when making technical decisions
-
 ## React Components
 
 - Reuse existing common components when possible
 - When creating new components, consider if they can be abstracted for use in multiple places
+
+## Code Cleanliness
+
+- Keep component styles in a `styles` object. Styles should not be managed inline
 
 ## Commit Messages
 
