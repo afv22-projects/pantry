@@ -5,7 +5,7 @@ const styles = {
   container: "space-y-6",
   categoryTitle:
     "font-mono text-[11px] text-muted uppercase tracking-wider mb-3",
-  itemsList: "space-y-2",
+  itemsList: "flex flex-wrap gap-2",
 };
 
 export default function GroupedList({

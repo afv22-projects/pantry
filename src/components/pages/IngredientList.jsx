@@ -6,10 +6,9 @@ import { CheckmarkIcon } from "../icons";
 import IngredientForm from "../features/IngredientForm.jsx";
 
 const styles = {
-  card: "flex items-center justify-between",
+  card: "flex items-center gap-4",
   cardContent: "flex items-center gap-3",
   cardName: "text-text lowercase",
-  cardArrow: "text-muted",
 };
 
 export default function IngredientList() {
@@ -49,7 +48,6 @@ export default function IngredientList() {
               </Button>
               <span className={styles.cardName}>{ingredient.name}</span>
             </div>
-            <span className={styles.cardArrow}>&rarr;</span>
           </Card>
         )}
       />

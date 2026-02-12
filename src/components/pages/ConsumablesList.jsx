@@ -8,10 +8,9 @@ import ConsumableForm from "../features/ConsumableForm.jsx";
 const styles = {
   loading: "text-muted font-mono",
   error: "text-red-500 font-mono",
-  cardContainer: "flex items-center justify-between",
+  cardContainer: "flex items-center gap-4",
   itemContent: "flex items-center gap-3",
   itemName: "text-text lowercase",
-  arrow: "text-muted",
 };
 
 export default function ConsumablesList() {
@@ -51,7 +50,6 @@ export default function ConsumablesList() {
               </Button>
               <span className={styles.itemName}>{consumable.name}</span>
             </div>
-            <span className={styles.arrow}>&rarr;</span>
           </Card>
         )}
       />
