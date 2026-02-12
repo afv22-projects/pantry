@@ -1,10 +1,13 @@
 import { NavLink } from "react-router-dom";
-import { useIngredients } from "../state";
+import { useIngredients, useConsumables } from "../state";
 
 export default function TabBar() {
   const { data: ingredients } = useIngredients();
+  const { data: consumables } = useConsumables();
 
-  const groceryCount = (ingredients || []).filter((i) => i.needed).length;
+  const ingredientCount = (ingredients || []).filter((i) => i.needed).length;
+  const consumableCount = (consumables || []).filter((c) => c.needed).length;
+  const groceryCount = ingredientCount + consumableCount;
 
   const tabs = [
     { path: "/recipes", label: "recipes" },

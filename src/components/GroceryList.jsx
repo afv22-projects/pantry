@@ -1,53 +1,75 @@
 import { useMemo } from "react";
-import { useIngredients, useToggleNeeded } from "../state";
+import {
+  useIngredients,
+  useToggleNeeded,
+  useConsumables,
+  useToggleConsumableNeeded,
+} from "../state";
 import { Button, Card, EmptyState, GroupedList } from "./common";
 import { CheckmarkIcon, DeleteIcon } from "./icons";
 
 export default function GroceryList() {
-  const { data: ingredients, isLoading, isError } = useIngredients();
+  const { data: ingredients, isLoading: ingredientsLoading, isError: ingredientsError } = useIngredients();
+  const { data: consumables, isLoading: consumablesLoading, isError: consumablesError } = useConsumables();
   const toggleNeeded = useToggleNeeded();
+  const toggleConsumableNeeded = useToggleConsumableNeeded();
 
-  const neededItems = useMemo(
-    () => ingredients?.filter((i) => i.needed) || [],
-    [ingredients],
-  );
+  const neededItems = useMemo(() => {
+    const neededIngredients = (ingredients?.filter((i) => i.needed) || []).map(item => ({
+      ...item,
+      type: 'ingredient',
+    }));
+    const neededConsumables = (consumables?.filter((c) => c.needed) || []).map(item => ({
+      ...item,
+      type: 'consumable',
+    }));
+    return [...neededIngredients, ...neededConsumables];
+  }, [ingredients, consumables]);
 
-  if (isLoading) {
+  if (ingredientsLoading || consumablesLoading) {
     return <div className="text-muted font-mono">loading...</div>;
   }
 
-  if (isError) {
-    return <div className="text-red-500 font-mono">error loading ingredients</div>;
+  if (ingredientsError || consumablesError) {
+    return <div className="text-red-500 font-mono">error loading grocery list</div>;
   }
 
   if (neededItems.length === 0) {
     return (
       <EmptyState
-        message="no items needed. mark ingredients from recipes or the ingredients tab."
+        message="no items needed. mark ingredients from recipes or the ingredients/consumables tabs."
         centered
       />
     );
   }
 
+  const handleToggle = (item) => {
+    if (item.type === 'ingredient') {
+      toggleNeeded.mutate(item);
+    } else {
+      toggleConsumableNeeded.mutate(item);
+    }
+  };
+
   return (
     <GroupedList
       items={neededItems}
-      getCategory={(ingredient) => ingredient.category}
-      renderItem={(ingredient) => (
-        <Card key={ingredient.id} className="flex items-center justify-between">
+      getCategory={(item) => item.category}
+      renderItem={(item) => (
+        <Card key={`${item.type}-${item.id}`} className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button
               variant="checkbox"
               active={true}
-              onClick={() => toggleNeeded.mutate(ingredient)}
+              onClick={() => handleToggle(item)}
             >
               <CheckmarkIcon />
             </Button>
-            <span className="text-text lowercase">{ingredient.name}</span>
+            <span className="text-text lowercase">{item.name}</span>
           </div>
           <Button
             variant="icon"
-            onClick={() => toggleNeeded.mutate(ingredient)}
+            onClick={() => handleToggle(item)}
             aria-label="Remove from grocery list"
           >
             <DeleteIcon />
