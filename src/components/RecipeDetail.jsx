@@ -11,7 +11,12 @@ import {
   useRemoveSourceFromRecipe,
 } from "../state/index.js";
 import RecipeEditor from "./RecipeEditor.jsx";
-import { Button, BackLink } from "./common/index.jsx";
+import { Button, BackLink, Loading } from "./common/index.jsx";
+
+const styles = {
+  missingRecipe: "text-muted font-mono text-sm",
+  missingRecipeLink: "text-accent hover:underline",
+};
 
 export default function RecipeDetail() {
   const { id } = useParams();
@@ -31,15 +36,13 @@ export default function RecipeDetail() {
   const ingredients = recipe?.ingredients || [];
   const sources = recipe?.sources || [];
 
-  if (recipeLoading) {
-    return <div className="text-muted font-mono">loading...</div>;
-  }
+  if (recipeLoading) return <Loading />;
 
   if (!recipe) {
     return (
-      <div className="text-muted font-mono text-sm">
+      <div className={styles.missingRecipe}>
         recipe not found.{" "}
-        <Link to="/recipes" className="text-accent hover:underline">
+        <Link to="/recipes" className={styles.missingRecipeLink}>
           go back
         </Link>
       </div>
@@ -61,14 +64,20 @@ export default function RecipeDetail() {
     // Find added ingredients
     for (const ingredient of newIngredients) {
       if (!oldIds.has(ingredient.id)) {
-        addIngredientToRecipe.mutate({ recipeId: id, ingredientName: ingredient.name });
+        addIngredientToRecipe.mutate({
+          recipeId: id,
+          ingredientName: ingredient.name,
+        });
       }
     }
 
     // Find removed ingredients
     for (const ingredient of ingredients) {
       if (!newIds.has(ingredient.id)) {
-        removeIngredientFromRecipe.mutate({ recipeId: id, ingredientName: ingredient.name });
+        removeIngredientFromRecipe.mutate({
+          recipeId: id,
+          ingredientName: ingredient.name,
+        });
       }
     }
   };
@@ -103,7 +112,7 @@ export default function RecipeDetail() {
   };
 
   return (
-    <div>
+    <>
       <BackLink to="/recipes" />
 
       <RecipeEditor
@@ -124,6 +133,6 @@ export default function RecipeDetail() {
       <Button variant="danger" onClick={handleDelete}>
         delete recipe
       </Button>
-    </div>
+    </>
   );
 }

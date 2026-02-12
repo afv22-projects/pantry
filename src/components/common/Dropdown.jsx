@@ -1,5 +1,29 @@
 import { useState } from "react";
 
+const styles = {
+  container: "relative",
+  button:
+    "w-full flex items-center justify-between bg-surface border border-border rounded-lg px-3 py-2.5 text-left transition-colors hover:border-muted focus:border-muted focus:outline-none",
+  valueText: "text-text",
+  placeholderText: "text-muted",
+  buttonControls: "flex items-center gap-2",
+  clearButton: "text-muted hover:text-text cursor-pointer",
+  chevron: "w-4 h-4 text-muted transition-transform",
+  chevronOpen: "rotate-180",
+  dropdown:
+    "absolute top-full left-0 right-0 mt-1 bg-surface border border-border rounded-lg overflow-hidden z-10",
+  searchContainer: "p-2 border-b border-border",
+  searchInput:
+    "w-full bg-background border border-border rounded px-2 py-1.5 text-text text-sm focus:outline-none focus:border-muted",
+  optionsList: "max-h-48 overflow-y-auto",
+  option: "w-full text-left px-3 py-2 text-sm hover:bg-border/50",
+  optionSelected: "text-accent",
+  optionUnselected: "text-text",
+  createOption:
+    "w-full text-left px-3 py-2 text-sm text-accent hover:bg-border/50",
+  noOptions: "px-3 py-2 text-sm text-muted",
+};
+
 export default function Dropdown({
   value,
   placeholder = "select...",
@@ -57,16 +81,16 @@ export default function Dropdown({
   const showClearButton = value && onClear;
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={`${styles.container} ${className}`}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between bg-surface border border-border rounded-lg px-3 py-2.5 text-left transition-colors hover:border-muted focus:border-muted focus:outline-none"
+        className={styles.button}
       >
-        <span className={value ? "text-text" : "text-muted"}>
+        <span className={value ? styles.valueText : styles.placeholderText}>
           {displayValue || placeholder}
         </span>
-        <div className="flex items-center gap-2">
+        <div className={styles.buttonControls}>
           {showClearButton && (
             <div
               role="button"
@@ -77,13 +101,13 @@ export default function Dropdown({
                   handleClear(e);
                 }
               }}
-              className="text-muted hover:text-text cursor-pointer"
+              className={styles.clearButton}
             >
               &times;
             </div>
           )}
           <svg
-            className={`w-4 h-4 text-muted transition-transform ${isOpen ? "rotate-180" : ""}`}
+            className={`${styles.chevron} ${isOpen ? styles.chevronOpen : ""}`}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -99,27 +123,27 @@ export default function Dropdown({
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-surface border border-border rounded-lg overflow-hidden z-10">
-          <div className="p-2 border-b border-border">
+        <div className={styles.dropdown}>
+          <div className={styles.searchContainer}>
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleInputKeyDown}
               placeholder={searchPlaceholder}
-              className="w-full bg-background border border-border rounded px-2 py-1.5 text-text text-sm focus:outline-none focus:border-muted"
+              className={styles.searchInput}
               autoFocus
             />
           </div>
-          <div className="max-h-48 overflow-y-auto">
+          <div className={styles.optionsList}>
             {filteredOptions.length > 0 ? (
               filteredOptions.map((option) => (
                 <button
                   key={option}
                   type="button"
                   onClick={() => handleSelect(option)}
-                  className={`w-full text-left px-3 py-2 text-sm hover:bg-border/50 ${
-                    option === value ? "text-accent" : "text-text"
+                  className={`${styles.option} ${
+                    option === value ? styles.optionSelected : styles.optionUnselected
                   }`}
                 >
                   {renderOption ? renderOption(option) : option}
@@ -129,14 +153,12 @@ export default function Dropdown({
               <button
                 type="button"
                 onClick={() => handleSelect(input.trim())}
-                className="w-full text-left px-3 py-2 text-sm text-accent hover:bg-border/50"
+                className={styles.createOption}
               >
                 create "{input.trim()}"
               </button>
             ) : (
-              <div className="px-3 py-2 text-sm text-muted">
-                no options found
-              </div>
+              <div className={styles.noOptions}>no options found</div>
             )}
           </div>
         </div>

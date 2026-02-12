@@ -25,13 +25,9 @@ export default function IngredientDetail() {
     // The API returns recipes with embedded ingredients
     // Convert id to number since useParams returns strings
     return recipes.filter((r) =>
-      r.ingredients?.some((i) => i.id === Number(id))
+      r.ingredients?.some((i) => i.id === Number(id)),
     );
   }, [ingredient, recipes, id]);
-
-  const handleToggleNeeded = () => {
-    toggleNeeded.mutate(ingredient);
-  };
 
   const handleCategoryChange = (category) => {
     updateIngredient.mutate({ id, category: category.toLowerCase() });
@@ -64,7 +60,7 @@ export default function IngredientDetail() {
           link: `/recipes/${recipe.id}`,
         })),
       }}
-      onToggleNeeded={handleToggleNeeded}
+      onToggleNeeded={() => toggleNeeded.mutate(ingredient)}
       onDelete={handleDelete}
     />
   );

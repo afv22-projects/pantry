@@ -1,5 +1,17 @@
 import { useState, useRef, useEffect } from "react";
 
+const styles = {
+  chipContainer:
+    "flex flex-wrap gap-2 bg-surface border border-border rounded-lg px-3 py-2.5 cursor-text transition-colors duration-500 hover:border-muted focus-within:border-muted",
+  chipButtonsContainer:
+    "inline-flex items-center gap-1 bg-background border border-border rounded px-2 py-1 text-sm text-text lowercase",
+  chipButtonText: "text-muted hover:text-text ml-1",
+  suggestionsContainer:
+    "absolute top-full left-0 right-0 mt-1 bg-surface border border-border rounded-lg overflow-hidden z-10",
+  suggestion:
+    "w-full text-left px-3 py-2 text-text text-sm hover:bg-border/50 lowercase",
+};
+
 export default function ChipInput({
   items,
   onChange,
@@ -58,13 +70,8 @@ export default function ChipInput({
     }
   };
 
-  const handleContainerClick = () => {
-    inputRef.current?.focus();
-  };
-
   const handleBlur = (e) => {
-    // Check if the new focus target is outside our container
-    if (containerRef.current && !containerRef.current.contains(e.relatedTarget)) {
+    if (!containerRef.current?.contains(e.relatedTarget)) {
       onClose?.();
     }
   };
@@ -72,14 +79,11 @@ export default function ChipInput({
   return (
     <div ref={containerRef} className="relative" onBlur={handleBlur}>
       <div
-        onClick={handleContainerClick}
-        className="flex flex-wrap gap-2 bg-surface border border-border rounded-lg px-3 py-2.5 cursor-text transition-colors duration-500 hover:border-muted focus-within:border-muted"
+        onClick={() => inputRef.current?.focus()}
+        className={styles.chipContainer}
       >
         {items.map((item) => (
-          <span
-            key={getKey(item)}
-            className="inline-flex items-center gap-1 bg-background border border-border rounded px-2 py-1 text-sm text-text lowercase"
-          >
+          <span key={getKey(item)} className={styles.chipButtonsContainer}>
             {getLabel(item)}
             <button
               type="button"
@@ -87,7 +91,7 @@ export default function ChipInput({
                 e.stopPropagation();
                 handleRemove(item);
               }}
-              className="text-muted hover:text-text ml-1"
+              className={styles.chipButtonText}
             >
               &times;
             </button>
@@ -105,13 +109,13 @@ export default function ChipInput({
       </div>
 
       {suggestions.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-surface border border-border rounded-lg overflow-hidden z-10">
+        <div className={styles.suggestionsContainer}>
           {suggestions.map((item) => (
             <button
               key={getKey(item)}
               type="button"
               onClick={() => handleAdd(item)}
-              className="w-full text-left px-3 py-2 text-text text-sm hover:bg-border/50 lowercase"
+              className={styles.suggestion}
             >
               {getLabel(item)}
             </button>

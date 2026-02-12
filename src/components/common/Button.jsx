@@ -1,3 +1,7 @@
+const styles = {
+  base: "font-mono transition-colors cursor-pointer",
+};
+
 export default function Button({
   children,
   variant = "primary",
@@ -8,8 +12,6 @@ export default function Button({
   className = "",
   ...props
 }) {
-  const baseStyles = "font-mono transition-colors cursor-pointer";
-
   const variants = {
     primary: `bg-accent text-white rounded-lg hover:bg-accent/90 disabled:opacity-50 disabled:cursor-not-allowed ${
       size === "sm" ? "text-[12px] px-3 py-1.5" : "text-[13px] py-2.5"
@@ -25,9 +27,7 @@ export default function Button({
     }`,
     fab: "fixed bottom-6 right-6 bg-accent text-white w-14 h-14 rounded-full text-2xl font-light shadow-lg hover:bg-accent/90",
     checkbox: `w-5 h-5 rounded border flex items-center justify-center ${
-      active
-        ? "bg-accent border-accent"
-        : "border-muted hover:border-text"
+      active ? "bg-accent border-accent" : "border-muted hover:border-text"
     }`,
     icon: "text-muted hover:text-text p-1",
   };
@@ -36,7 +36,7 @@ export default function Button({
     <button
       type={type}
       disabled={disabled}
-      className={`${baseStyles} ${variants[variant]} ${className}`}
+      className={`${styles.base} ${variants[variant]} ${className}`}
       {...props}
     >
       {children}

@@ -21,7 +21,9 @@ export default function ConsumablesList() {
   }
 
   if (isError) {
-    return <div className="text-red-500 font-mono">error loading consumables</div>;
+    return (
+      <div className="text-red-500 font-mono">error loading consumables</div>
+    );
   }
 
   return (
@@ -52,7 +54,9 @@ export default function ConsumablesList() {
         )}
       />
 
-      <Button variant="fab" onClick={() => setShowForm(true)}>+</Button>
+      <Button variant="fab" onClick={() => setShowForm(true)}>
+        +
+      </Button>
       {showForm && <ConsumableForm onClose={() => setShowForm(false)} />}
     </div>
   );

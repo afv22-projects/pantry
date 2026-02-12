@@ -17,10 +17,6 @@ export default function ConsumableDetail() {
   const updateConsumable = useUpdateConsumable();
   const deleteConsumable = useDeleteConsumable();
 
-  const handleToggleNeeded = () => {
-    toggleNeeded.mutate(consumable);
-  };
-
   const handleCategoryChange = (category) => {
     updateConsumable.mutate({ id, category: category.toLowerCase() });
   };
@@ -43,7 +39,7 @@ export default function ConsumableDetail() {
           onChange={handleCategoryChange}
         />
       }
-      onToggleNeeded={handleToggleNeeded}
+      onToggleNeeded={() => toggleNeeded.mutate(consumable)}
       onDelete={handleDelete}
     />
   );

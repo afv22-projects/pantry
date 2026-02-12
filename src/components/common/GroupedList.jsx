@@ -1,5 +1,13 @@
 import { useMemo } from "react";
 
+const styles = {
+  emptyMessage: "text-muted font-mono text-sm",
+  container: "space-y-6",
+  categoryTitle:
+    "font-mono text-[11px] text-muted uppercase tracking-wider mb-3",
+  itemsList: "space-y-2",
+};
+
 export default function GroupedList({
   items,
   getCategory,
@@ -38,17 +46,15 @@ export default function GroupedList({
   }, [items, getCategory, sortItems]);
 
   if (items.length === 0) {
-    return <div className="text-muted font-mono text-sm">{emptyMessage}</div>;
+    return <div className={styles.emptyMessage}>{emptyMessage}</div>;
   }
 
   return (
-    <div className="space-y-6">
+    <div className={styles.container}>
       {groupedItems.map(({ category, items }) => (
         <section key={category}>
-          <h3 className="font-mono text-[11px] text-muted uppercase tracking-wider mb-3">
-            {category}
-          </h3>
-          <div className="space-y-2">{items.map(renderItem)}</div>
+          <h3 className={styles.categoryTitle}>{category}</h3>
+          <div className={styles.itemsList}>{items.map(renderItem)}</div>
         </section>
       ))}
     </div>

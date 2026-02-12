@@ -6,23 +6,35 @@ import {
   useToggleConsumableNeeded,
 } from "../state";
 import { Button, Card, EmptyState, GroupedList } from "./common";
-import { CheckmarkIcon, DeleteIcon } from "./icons";
+import { CheckmarkIcon } from "./icons";
 
 export default function GroceryList() {
-  const { data: ingredients, isLoading: ingredientsLoading, isError: ingredientsError } = useIngredients();
-  const { data: consumables, isLoading: consumablesLoading, isError: consumablesError } = useConsumables();
+  const {
+    data: ingredients,
+    isLoading: ingredientsLoading,
+    isError: ingredientsError,
+  } = useIngredients();
+  const {
+    data: consumables,
+    isLoading: consumablesLoading,
+    isError: consumablesError,
+  } = useConsumables();
   const toggleNeeded = useToggleNeeded();
   const toggleConsumableNeeded = useToggleConsumableNeeded();
 
   const neededItems = useMemo(() => {
-    const neededIngredients = (ingredients?.filter((i) => i.needed) || []).map(item => ({
-      ...item,
-      type: 'ingredient',
-    }));
-    const neededConsumables = (consumables?.filter((c) => c.needed) || []).map(item => ({
-      ...item,
-      type: 'consumable',
-    }));
+    const neededIngredients = (ingredients?.filter((i) => i.needed) || []).map(
+      (item) => ({
+        ...item,
+        type: "ingredient",
+      }),
+    );
+    const neededConsumables = (consumables?.filter((c) => c.needed) || []).map(
+      (item) => ({
+        ...item,
+        type: "consumable",
+      }),
+    );
     return [...neededIngredients, ...neededConsumables];
   }, [ingredients, consumables]);
 
@@ -31,7 +43,9 @@ export default function GroceryList() {
   }
 
   if (ingredientsError || consumablesError) {
-    return <div className="text-red-500 font-mono">error loading grocery list</div>;
+    return (
+      <div className="text-red-500 font-mono">error loading grocery list</div>
+    );
   }
 
   if (neededItems.length === 0) {
@@ -44,7 +58,7 @@ export default function GroceryList() {
   }
 
   const handleToggle = (item) => {
-    if (item.type === 'ingredient') {
+    if (item.type === "ingredient") {
       toggleNeeded.mutate(item);
     } else {
       toggleConsumableNeeded.mutate(item);
@@ -56,7 +70,10 @@ export default function GroceryList() {
       items={neededItems}
       getCategory={(item) => item.category}
       renderItem={(item) => (
-        <Card key={`${item.type}-${item.id}`} className="flex items-center justify-between">
+        <Card
+          key={`${item.type}-${item.id}`}
+          className="flex items-center justify-between"
+        >
           <div className="flex items-center gap-3">
             <Button
               variant="checkbox"

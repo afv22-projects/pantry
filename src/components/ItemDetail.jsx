@@ -1,5 +1,21 @@
-import { Button, Card, EmptyState, BackLink } from "./common";
+import { Button, Card, EmptyState, Loading, BackLink } from "./common";
 import { Link } from "react-router-dom";
+
+const styles = {
+  loading: "text-muted font-mono",
+  missingItem: "text-muted font-mono text-sm",
+  missingItemLink: "text-accent hover:underline",
+  name: "text-2xl font-normal text-text mb-6 lowercase",
+  needed: "mb-6",
+  category: "mb-8",
+  categoryTitle:
+    "font-mono text-[11px] text-muted uppercase tracking-wider mb-3",
+  delete: "mt-8",
+  relatedItemsTitle:
+    "font-mono text-[11px] text-muted uppercase tracking-wider mb-3",
+  relatedItemsWrapper: "space-y-2",
+  relatedItemName: "text-text lowercase",
+};
 
 export default function ItemDetail({
   item,
@@ -11,15 +27,13 @@ export default function ItemDetail({
   onToggleNeeded,
   onDelete,
 }) {
-  if (isLoading) {
-    return <div className="text-muted font-mono">loading...</div>;
-  }
+  if (isLoading) return <Loading />;
 
   if (!item) {
     return (
-      <div className="text-muted font-mono text-sm">
+      <div className={styles.missingItem}>
         {itemType} not found.{" "}
-        <Link to={backLink} className="text-accent hover:underline">
+        <Link to={backLink} className={styles.missingItemLink}>
           go back
         </Link>
       </div>
@@ -33,41 +47,37 @@ export default function ItemDetail({
   };
 
   return (
-    <div>
+    <>
       <BackLink to={backLink} />
 
-      <h2 className="text-2xl font-normal text-text mb-6 lowercase">
-        {item.name}
-      </h2>
+      <h2 className={styles.name}>{item.name}</h2>
 
       <Button
         variant="toggle"
         active={item.needed}
         onClick={onToggleNeeded}
-        className="mb-6"
+        className={styles.needed}
       >
         {item.needed ? "marked as needed" : "+ mark as needed"}
       </Button>
 
-      <section className="mb-8">
-        <h3 className="font-mono text-[11px] text-muted uppercase tracking-wider mb-3">
-          Category
-        </h3>
+      <section className={styles.category}>
+        <h3 className={styles.categoryTitle}>Category</h3>
         {categoryInput}
       </section>
 
       {relatedItems && (
         <section>
-          <h3 className="font-mono text-[11px] text-muted uppercase tracking-wider mb-3">
-            {relatedItems.title}
-          </h3>
+          <h3 className={styles.relatedItemsTitle}>{relatedItems.title}</h3>
           {relatedItems.items.length === 0 ? (
             <EmptyState message={relatedItems.emptyMessage} />
           ) : (
-            <div className="space-y-2">
+            <div className={styles.relatedItemsWrapper}>
               {relatedItems.items.map((relatedItem) => (
                 <Card key={relatedItem.id} as={Link} to={relatedItem.link}>
-                  <span className="text-text lowercase">{relatedItem.name}</span>
+                  <span className={styles.relatedItemName}>
+                    {relatedItem.name}
+                  </span>
                 </Card>
               ))}
             </div>
@@ -75,13 +85,9 @@ export default function ItemDetail({
         </section>
       )}
 
-      <Button
-        variant="danger"
-        onClick={handleDelete}
-        className="mt-8"
-      >
+      <Button variant="danger" onClick={handleDelete} className={styles.delete}>
         delete {itemType}
       </Button>
-    </div>
+    </>
   );
 }

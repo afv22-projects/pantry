@@ -2,7 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCreateRecipe } from "../state/index.js";
 import RecipeEditor from "./RecipeEditor.jsx";
-import { Button } from "./common/index.jsx";
+import { Button, Modal } from "./common/index.jsx";
+
+const styles = {
+  buttonGrid: "flex gap-3",
+  submitButton: "flex-1",
+};
 
 export default function RecipeForm({ onClose }) {
   const navigate = useNavigate();
@@ -16,58 +21,49 @@ export default function RecipeForm({ onClose }) {
     e.preventDefault();
     if (!name.trim()) return;
 
-    // Create recipe with ingredients array
-    createRecipe.mutate(
-      {
-        name: name.trim(),
-        notes,
-        ingredients: ingredients.map(i => i.name),
+    const recipeDetails = {
+      name: name.trim(),
+      notes,
+      ingredients: ingredients.map((i) => i.name),
+    };
+
+    createRecipe.mutate(recipeDetails, {
+      onSuccess: (recipe) => {
+        navigate(`/recipes/${recipe.id}`);
+        onClose();
       },
-      {
-        onSuccess: (recipe) => {
-          navigate(`/recipes/${recipe.id}`);
-          onClose();
-        },
-      }
-    );
+    });
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-start justify-center py-8 px-4 z-50 overflow-y-auto">
-      <div className="bg-bg border border-border rounded-lg w-full max-w-lg p-6 mb-8">
-        <h2 className="text-xl font-normal text-text mb-6 lowercase">
-          new recipe
-        </h2>
+    <Modal title="new recipe" onClose={onClose}>
+      <form onSubmit={handleSubmit}>
+        <RecipeEditor
+          name={name}
+          onNameChange={setName}
+          notes={notes}
+          onNotesChange={setNotes}
+          ingredients={ingredients}
+          onIngredientsChange={setIngredients}
+          showNeededIndicator={false}
+          namePlaceholder="recipe name"
+          nameEditable={true}
+          isCreateMode={true}
+        />
 
-        <form onSubmit={handleSubmit}>
-          <RecipeEditor
-            name={name}
-            onNameChange={setName}
-            notes={notes}
-            onNotesChange={setNotes}
-            ingredients={ingredients}
-            onIngredientsChange={setIngredients}
-            showNeededIndicator={false}
-            namePlaceholder="recipe name"
-            nameEditable={true}
-            isCreateMode={true}
-          />
-
-          {/* Actions */}
-          <div className="flex gap-3">
-            <Button
-              type="submit"
-              disabled={!name.trim() || createRecipe.isPending}
-              className="flex-1"
-            >
-              {createRecipe.isPending ? "creating..." : "create recipe"}
-            </Button>
-            <Button variant="secondary" onClick={onClose}>
-              cancel
-            </Button>
-          </div>
-        </form>
-      </div>
-    </div>
+        <div className={styles.buttonGrid}>
+          <Button
+            type="submit"
+            disabled={!name.trim() || createRecipe.isPending}
+            className={styles.submitButton}
+          >
+            {createRecipe.isPending ? "creating..." : "create recipe"}
+          </Button>
+          <Button variant="secondary" onClick={onClose}>
+            cancel
+          </Button>
+        </div>
+      </form>
+    </Modal>
   );
 }

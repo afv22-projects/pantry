@@ -1,9 +1,16 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useIngredients, useToggleNeeded } from "../state";
-import { Button, Card, GroupedList } from "./common";
+import { Button, Card, Loading, GroupedList, ErrorMessage } from "./common";
 import { CheckmarkIcon } from "./icons";
 import IngredientForm from "./IngredientForm.jsx";
+
+const styles = {
+  card: "flex items-center justify-between",
+  cardContent: "flex items-center gap-3",
+  cardName: "text-text lowercase",
+  cardArrow: "text-muted",
+};
 
 export default function IngredientList() {
   const { data: ingredients, isLoading, isError } = useIngredients();
@@ -16,16 +23,11 @@ export default function IngredientList() {
     toggleNeeded.mutate(ingredient);
   };
 
-  if (isLoading) {
-    return <div className="text-muted font-mono">loading...</div>;
-  }
-
-  if (isError) {
-    return <div className="text-red-500 font-mono">error loading ingredients</div>;
-  }
+  if (isLoading) return <Loading />;
+  if (isError) return <ErrorMessage>error loading ingredients</ErrorMessage>;
 
   return (
-    <div>
+    <>
       <GroupedList
         items={ingredients || []}
         getCategory={(ingredient) => ingredient.category}
@@ -35,9 +37,9 @@ export default function IngredientList() {
             key={ingredient.id}
             as={Link}
             to={`/ingredients/${ingredient.id}`}
-            className="flex items-center justify-between"
+            className={styles.card}
           >
-            <div className="flex items-center gap-3">
+            <div className={styles.cardContent}>
               <Button
                 variant="checkbox"
                 active={ingredient.needed}
@@ -45,15 +47,17 @@ export default function IngredientList() {
               >
                 {ingredient.needed && <CheckmarkIcon />}
               </Button>
-              <span className="text-text lowercase">{ingredient.name}</span>
+              <span className={styles.cardName}>{ingredient.name}</span>
             </div>
-            <span className="text-muted">&rarr;</span>
+            <span className={styles.cardArrow}>&rarr;</span>
           </Card>
         )}
       />
 
-      <Button variant="fab" onClick={() => setShowForm(true)}>+</Button>
+      <Button variant="fab" onClick={() => setShowForm(true)}>
+        +
+      </Button>
       {showForm && <IngredientForm onClose={() => setShowForm(false)} />}
-    </div>
+    </>
   );
 }

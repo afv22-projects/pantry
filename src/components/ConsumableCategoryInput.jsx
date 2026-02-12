@@ -6,6 +6,7 @@ export default function ConsumableCategoryInput({ value, onChange }) {
   const { data: canonicalCategories = [] } = useConsumableCategories();
   const { data: consumables } = useConsumables();
 
+  // TODO: Disallow custom categories
   const allCategories = useMemo(() => {
     // Get consumable categories that aren't already in canonical list
     const consumableCategories = (consumables || [])
@@ -17,22 +18,14 @@ export default function ConsumableCategoryInput({ value, onChange }) {
     return Array.from(combined).sort();
   }, [canonicalCategories, consumables]);
 
-  const handleSelect = (category) => {
-    onChange(category.toLowerCase());
-  };
-
-  const handleClear = () => {
-    onChange("");
-  };
-
   return (
     <Dropdown
       value={value}
       placeholder="select category..."
       searchPlaceholder="search or create..."
       options={allCategories}
-      onSelect={handleSelect}
-      onClear={handleClear}
+      onSelect={(category) => onChange(category.toLowerCase())}
+      onClear={() => onChange("")}
       allowCreate={true}
       renderValue={(val) => <span className="lowercase">{val}</span>}
       renderOption={(opt) => <span className="lowercase">{opt}</span>}

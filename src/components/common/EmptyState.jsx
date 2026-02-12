@@ -1,9 +1,10 @@
-export default function EmptyState({ message, centered = false }) {
-  const baseClasses = "text-muted font-mono text-sm";
-  const classes = centered ? `${baseClasses} text-center py-12` : baseClasses;
+const styles = {
+  base: "text-muted font-mono text-sm",
+};
 
+export default function EmptyState({ message, centered = false }) {
   return (
-    <div className={classes}>
+    <div className={`${styles.base} ${centered ? styles.base : ""}`}>
       {message}
     </div>
   );

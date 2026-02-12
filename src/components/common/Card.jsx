@@ -1,10 +1,16 @@
-export default function Card({ children, className = "", as = "div", ...props }) {
-  const Component = as;
-  const baseClasses = "bg-surface border border-border rounded-lg px-4 py-4 hover:border-muted transition-colors";
-  const combinedClasses = `${baseClasses} ${className}`.trim();
+const styles = {
+  base: "bg-surface border border-border rounded-lg px-4 py-4 hover:border-muted transition-colors",
+};
 
+export default function Card({
+  children,
+  className = "",
+  as = "div",
+  ...props
+}) {
+  const Component = as;
   return (
-    <Component className={combinedClasses} {...props}>
+    <Component className={`${styles.base} ${className}`} {...props}>
       {children}
     </Component>
   );
