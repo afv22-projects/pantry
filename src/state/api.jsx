@@ -48,45 +48,43 @@ export const api = {
   },
 
   async getRecipes() {
-    const res = await fetch(`${API_BASE}/recipes`);
-    if (!res.ok) throw new Error("Failed to fetch recipes");
-    const recipes = await res.json();
+    const [recipesRes, ingredientsRes] = await Promise.all([
+      fetch(`${API_BASE}/recipes`),
+      fetch(`${API_BASE}/ingredients`),
+    ]);
+    if (!recipesRes.ok) throw new Error("Failed to fetch recipes");
+    if (!ingredientsRes.ok) throw new Error("Failed to fetch ingredients");
 
-    // Expand ingredient_ids to full ingredient objects
-    const recipesWithIngredients = await Promise.all(
-      recipes.map(async (recipe) => {
-        if (!recipe.ingredient_ids || recipe.ingredient_ids.length === 0) {
-          return { ...recipe, ingredients: [] };
-        }
+    const recipes = await recipesRes.json();
+    const ingredients = await ingredientsRes.json();
+    const ingredientMap = new Map(ingredients.map((i) => [i.id, i]));
 
-        const ingredients = await Promise.all(
-          recipe.ingredient_ids.map((id) => api.getIngredient(id)),
-        );
-
-        return { ...recipe, ingredients };
-      }),
-    );
-
-    return recipesWithIngredients;
+    return recipes.map((recipe) => ({
+      ...recipe,
+      ingredients: (recipe.ingredient_ids || [])
+        .map((id) => ingredientMap.get(id))
+        .filter(Boolean),
+    }));
   },
 
   async getRecipe(id) {
-    const res = await fetch(`${API_BASE}/recipes/${id}`);
-    if (!res.ok) throw new Error("Failed to fetch recipe");
-    const recipe = await res.json();
+    const [recipeRes, ingredientsRes] = await Promise.all([
+      fetch(`${API_BASE}/recipes/${id}`),
+      fetch(`${API_BASE}/ingredients`),
+    ]);
+    if (!recipeRes.ok) throw new Error("Failed to fetch recipe");
+    if (!ingredientsRes.ok) throw new Error("Failed to fetch ingredients");
 
-    // Expand ingredient_ids to full ingredient objects
-    if (!recipe.ingredient_ids || recipe.ingredient_ids.length === 0) {
-      return { ...recipe, ingredients: [] };
-    }
+    const recipe = await recipeRes.json();
+    const ingredients = await ingredientsRes.json();
+    const ingredientMap = new Map(ingredients.map((i) => [i.id, i]));
 
-    const ingredients = await Promise.all(
-      recipe.ingredient_ids.map((ingredientId) =>
-        api.getIngredient(ingredientId),
-      ),
-    );
-
-    return { ...recipe, ingredients };
+    return {
+      ...recipe,
+      ingredients: (recipe.ingredient_ids || [])
+        .map((ingId) => ingredientMap.get(ingId))
+        .filter(Boolean),
+    };
   },
 
   async createRecipe(recipe) {
@@ -105,7 +103,6 @@ export const api = {
     if (!res.ok) throw new Error("Failed to create recipe");
     const createdRecipe = await res.json();
 
-    // Expand ingredient_ids to full ingredient objects for consistency
     if (
       !createdRecipe.ingredient_ids ||
       createdRecipe.ingredient_ids.length === 0
@@ -113,11 +110,17 @@ export const api = {
       return { ...createdRecipe, ingredients: [] };
     }
 
-    const ingredients = await Promise.all(
-      createdRecipe.ingredient_ids.map((id) => api.getIngredient(id)),
-    );
+    const ingredientsRes = await fetch(`${API_BASE}/ingredients`);
+    if (!ingredientsRes.ok) throw new Error("Failed to fetch ingredients");
+    const allIngredients = await ingredientsRes.json();
+    const ingredientMap = new Map(allIngredients.map((i) => [i.id, i]));
 
-    return { ...createdRecipe, ingredients };
+    return {
+      ...createdRecipe,
+      ingredients: createdRecipe.ingredient_ids
+        .map((id) => ingredientMap.get(id))
+        .filter(Boolean),
+    };
   },
 
   async updateRecipe({ id, ...fields }) {

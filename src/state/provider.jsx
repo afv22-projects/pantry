@@ -5,7 +5,7 @@ import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persi
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 0, // Always consider data stale, refetch on every request
+      staleTime: 1000 * 30, // 30 seconds before data is considered stale
       gcTime: 1000 * 60 * 60 * 24,
       refetchOnWindowFocus: true,
       refetchOnMount: true,
@@ -34,7 +34,7 @@ export default function StateProvider({ children }) {
         maxAge: 1000 * 60 * 60 * 24,
         dehydrateOptions: {
           shouldDehydrateQuery: (query) => {
-            const persistKeys = ["ingredients", "recipes"];
+            const persistKeys = ["ingredients", "recipes", "consumables"];
             return persistKeys.some((key) => query.queryKey.includes(key));
           },
         },

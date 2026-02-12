@@ -14,8 +14,9 @@ export function useConsumables() {
 
 export function useConsumable(id) {
   return useQuery({
-    queryKey: ["consumables", id],
-    queryFn: () => api.getConsumable(id),
+    queryKey: ["consumables"],
+    queryFn: api.getConsumables,
+    select: (data) => data?.find((c) => c.id === Number(id)),
     enabled: !!id,
   });
 }
@@ -171,8 +172,9 @@ export function useIngredients() {
 
 export function useIngredient(id) {
   return useQuery({
-    queryKey: ["ingredients", id],
-    queryFn: () => api.getIngredient(id),
+    queryKey: ["ingredients"],
+    queryFn: api.getIngredients,
+    select: (data) => data?.find((i) => i.id === Number(id)),
     enabled: !!id,
   });
 }
@@ -331,9 +333,12 @@ export function useRecipes() {
 }
 
 export function useRecipe(id) {
+  const qc = useQueryClient();
   return useQuery({
     queryKey: ["recipes", id],
     queryFn: () => api.getRecipe(id),
+    placeholderData: () =>
+      qc.getQueryData(["recipes"])?.find((r) => r.id === Number(id)),
     enabled: !!id,
   });
 }
@@ -431,9 +436,8 @@ export function useAddIngredientToRecipe() {
   return useMutation({
     mutationFn: api.addIngredientToRecipe,
 
-    onSettled: (_data, _err, { recipeId }) => {
+    onSettled: () => {
       qc.invalidateQueries({ queryKey: ["recipes"] });
-      qc.invalidateQueries({ queryKey: ["recipes", recipeId] });
     },
   });
 }
@@ -444,7 +448,7 @@ export function useRemoveIngredientFromRecipe() {
   return useMutation({
     mutationFn: api.removeIngredientFromRecipe,
 
-    onMutate: async ({ recipeId, ingredientId }) => {
+    onMutate: async ({ recipeId, ingredientName }) => {
       await qc.cancelQueries({ queryKey: ["recipes", recipeId] });
       const previous = qc.getQueryData(["recipes", recipeId]);
 
@@ -453,7 +457,7 @@ export function useRemoveIngredientFromRecipe() {
           ? {
               ...old,
               ingredients: old.ingredients?.filter(
-                (i) => i.id !== ingredientId,
+                (i) => i.name !== ingredientName,
               ),
             }
           : old,
@@ -468,9 +472,8 @@ export function useRemoveIngredientFromRecipe() {
       }
     },
 
-    onSettled: (_data, _err, { recipeId }) => {
+    onSettled: () => {
       qc.invalidateQueries({ queryKey: ["recipes"] });
-      qc.invalidateQueries({ queryKey: ["recipes", recipeId] });
     },
   });
 }
@@ -485,9 +488,8 @@ export function useAddSourceToRecipe() {
   return useMutation({
     mutationFn: api.addSourceToRecipe,
 
-    onSettled: (_data, _err, { recipeId }) => {
+    onSettled: () => {
       qc.invalidateQueries({ queryKey: ["recipes"] });
-      qc.invalidateQueries({ queryKey: ["recipes", recipeId] });
     },
   });
 }
@@ -498,9 +500,8 @@ export function useRemoveSourceFromRecipe() {
   return useMutation({
     mutationFn: api.removeSourceFromRecipe,
 
-    onSettled: (_data, _err, { recipeId }) => {
+    onSettled: () => {
       qc.invalidateQueries({ queryKey: ["recipes"] });
-      qc.invalidateQueries({ queryKey: ["recipes", recipeId] });
     },
   });
 }
