@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   useIngredient,
   useRecipes,
@@ -8,7 +8,7 @@ import {
   useDeleteIngredient,
 } from "../state";
 import CategoryInput from "./CategoryInput";
-import { Button, Card, EmptyState, BackLink } from "./common";
+import ItemDetail from "./ItemDetail";
 
 export default function IngredientDetail() {
   const { id } = useParams();
@@ -29,21 +29,6 @@ export default function IngredientDetail() {
     );
   }, [ingredient, recipes, id]);
 
-  if (ingredientLoading || recipesLoading) {
-    return <div className="text-muted font-mono">loading...</div>;
-  }
-
-  if (!ingredient) {
-    return (
-      <div className="text-muted font-mono text-sm">
-        ingredient not found.{" "}
-        <Link to="/ingredients" className="text-accent hover:underline">
-          go back
-        </Link>
-      </div>
-    );
-  }
-
   const handleToggleNeeded = () => {
     toggleNeeded.mutate(ingredient);
   };
@@ -53,64 +38,34 @@ export default function IngredientDetail() {
   };
 
   const handleDelete = () => {
-    if (window.confirm("delete this ingredient?")) {
-      deleteIngredient.mutate(id, {
-        onSuccess: () => navigate("/ingredients"),
-      });
-    }
+    deleteIngredient.mutate(id, {
+      onSuccess: () => navigate("/ingredients"),
+    });
   };
 
   return (
-    <div>
-      <BackLink to="/ingredients" />
-
-      <h2 className="text-2xl font-normal text-text mb-6 lowercase">
-        {ingredient.name}
-      </h2>
-
-      <Button
-        variant="toggle"
-        active={ingredient.needed}
-        onClick={handleToggleNeeded}
-        className="mb-6"
-      >
-        {ingredient.needed ? "marked as needed" : "+ mark as needed"}
-      </Button>
-
-      <section className="mb-8">
-        <h3 className="font-mono text-[11px] text-muted uppercase tracking-wider mb-3">
-          Category
-        </h3>
+    <ItemDetail
+      item={ingredient}
+      itemType="ingredient"
+      isLoading={ingredientLoading || recipesLoading}
+      backLink="/ingredients"
+      categoryInput={
         <CategoryInput
-          value={ingredient.category || ""}
+          value={ingredient?.category || ""}
           onChange={handleCategoryChange}
         />
-      </section>
-
-      <section>
-        <h3 className="font-mono text-[11px] text-muted uppercase tracking-wider mb-3">
-          Used In
-        </h3>
-        {recipesUsingIngredient.length === 0 ? (
-          <EmptyState message="not used in any recipes yet" />
-        ) : (
-          <div className="space-y-2">
-            {recipesUsingIngredient.map((recipe) => (
-              <Card key={recipe.id} as={Link} to={`/recipes/${recipe.id}`}>
-                <span className="text-text lowercase">{recipe.name}</span>
-              </Card>
-            ))}
-          </div>
-        )}
-      </section>
-
-      <Button
-        variant="danger"
-        onClick={handleDelete}
-        className="mt-8"
-      >
-        delete ingredient
-      </Button>
-    </div>
+      }
+      relatedItems={{
+        title: "Used In",
+        emptyMessage: "not used in any recipes yet",
+        items: recipesUsingIngredient.map((recipe) => ({
+          id: recipe.id,
+          name: recipe.name,
+          link: `/recipes/${recipe.id}`,
+        })),
+      }}
+      onToggleNeeded={handleToggleNeeded}
+      onDelete={handleDelete}
+    />
   );
 }

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useConsumables, useToggleConsumableNeeded } from "../state";
 import { Button, Card, GroupedList } from "./common";
 import { CheckmarkIcon } from "./icons";
@@ -32,6 +33,8 @@ export default function ConsumablesList() {
         renderItem={(consumable) => (
           <Card
             key={consumable.id}
+            as={Link}
+            to={`/consumables/${consumable.id}`}
             className="flex items-center justify-between"
           >
             <div className="flex items-center gap-3">
@@ -44,6 +47,7 @@ export default function ConsumablesList() {
               </Button>
               <span className="text-text lowercase">{consumable.name}</span>
             </div>
+            <span className="text-muted">&rarr;</span>
           </Card>
         )}
       />
