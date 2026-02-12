@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useIngredients } from "../state/index.js";
 import ChipInput from "./ChipInput.jsx";
+import NotesEditor from "./NotesEditor.jsx";
 import { Button } from "./common/index.jsx";
 import DeleteIcon from "./icons/DeleteIcon.jsx";
 
@@ -19,15 +20,6 @@ const styles = {
   ingredientChip:
     "inline-flex items-center gap-1 bg-background border border-border rounded px-2 py-1 text-sm text-text lowercase cursor-pointer",
   ingredientNeeded: "w-2 h-2 rounded-full bg-accent",
-  notesContainer: "mb-8",
-  notesTitle: "font-mono text-[11px] text-muted uppercase tracking-wider mb-3",
-  notesTextarea:
-    "w-full bg-surface border border-border rounded-lg p-3 text-text text-sm resize-none focus:outline-none focus:border-muted",
-  notesButtons: "flex gap-2 mt-2",
-  notesDisplay:
-    "bg-surface rounded-lg p-3 text-sm cursor-pointer hover:border-muted border border-transparent transition-colors",
-  notesText: "text-text whitespace-pre-wrap",
-  notesPlaceholder: "text-muted font-mono",
   sourceContainer: "mb-8",
   sourceTitle: "font-mono text-[11px] text-muted uppercase tracking-wider mb-3",
   sourceList: "space-y-3 mb-3",
@@ -115,8 +107,6 @@ export default function RecipeEditor({
 }) {
   const { data: allIngredients } = useIngredients();
 
-  const [isEditingNotes, setIsEditingNotes] = useState(false);
-  const [editingNotes, setEditingNotes] = useState(notes);
   const [isEditingIngredients, setIsEditingIngredients] = useState(false);
   const [ingredientInput, setIngredientInput] = useState("");
   const [isAddingSource, setIsAddingSource] = useState(false);
@@ -165,11 +155,6 @@ export default function RecipeEditor({
     // The parent component (RecipeDetail) will handle adding it to the recipe
     // via addIngredientToRecipe, which creates the ingredient if needed
     return { name: inputValue, id: `temp-${Date.now()}` };
-  };
-
-  const handleSaveNotes = () => {
-    onNotesChange(editingNotes);
-    setIsEditingNotes(false);
   };
 
   const handleAddSource = () => {
@@ -257,51 +242,7 @@ export default function RecipeEditor({
         )}
       </section>
 
-      {/* TODO: Extract into textbox component */}
-      <section className={styles.notesContainer}>
-        <h3 className={styles.notesTitle}>Notes</h3>
-        {isEditingNotes ? (
-          <div>
-            <textarea
-              value={editingNotes}
-              onChange={(e) => setEditingNotes(e.target.value)}
-              className={styles.notesTextarea}
-              rows={4}
-              placeholder="optional cooking notes"
-              autoFocus
-            />
-            <div className={styles.notesButtons}>
-              <Button variant="primary" size="sm" onClick={handleSaveNotes}>
-                save
-              </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => {
-                  setEditingNotes(notes);
-                  setIsEditingNotes(false);
-                }}
-              >
-                cancel
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div
-            onClick={() => {
-              setEditingNotes(notes);
-              setIsEditingNotes(true);
-            }}
-            className={styles.notesDisplay}
-          >
-            {notes ? (
-              <p className={styles.notesText}>{notes}</p>
-            ) : (
-              <p className={styles.notesPlaceholder}>click to add notes</p>
-            )}
-          </div>
-        )}
-      </section>
+      <NotesEditor notes={notes} onNotesChange={onNotesChange} />
 
       {!isCreateMode && onAddSource && onRemoveSource && (
         <section className={styles.sourceContainer}>
