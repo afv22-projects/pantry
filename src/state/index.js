@@ -1,6 +1,14 @@
 export { default as StateProvider } from "./provider.jsx";
 export { api } from "./api.jsx";
 export {
+  // Consumables
+  useConsumables,
+  useConsumable,
+  useConsumableCategories,
+  useToggleConsumableNeeded,
+  useCreateConsumable,
+  useUpdateConsumable,
+  useDeleteConsumable,
   // Ingredients
   useIngredients,
   useIngredient,

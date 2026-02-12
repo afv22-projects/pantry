@@ -5,6 +5,7 @@ import RecipesPage from "./components/RecipesPage.jsx";
 import RecipeDetail from "./components/RecipeDetail.jsx";
 import IngredientList from "./components/IngredientList.jsx";
 import IngredientDetail from "./components/IngredientDetail.jsx";
+import ConsumablesList from "./components/ConsumablesList.jsx";
 import GroceryList from "./components/GroceryList.jsx";
 import { LogoIcon } from "./components/icons/index.jsx";
 
@@ -27,6 +28,7 @@ function AppContent() {
             <Route path="/recipes/:id" element={<RecipeDetail />} />
             <Route path="/ingredients" element={<IngredientList />} />
             <Route path="/ingredients/:id" element={<IngredientDetail />} />
+            <Route path="/consumables" element={<ConsumablesList />} />
             <Route path="/grocery" element={<GroceryList />} />
           </Routes>
         </main>

@@ -9,6 +9,7 @@ export default function TabBar() {
   const tabs = [
     { path: "/recipes", label: "recipes" },
     { path: "/ingredients", label: "ingredients" },
+    { path: "/consumables", label: "consumables" },
     { path: "/grocery", label: "grocery list", showBadge: true },
   ];
 

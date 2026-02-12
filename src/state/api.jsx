@@ -173,4 +173,50 @@ export const api = {
     if (!res.ok) throw new Error("Failed to remove source from recipe");
     return null;
   },
+
+  async getConsumables() {
+    const res = await fetch(`${API_BASE}/consumables`);
+    if (!res.ok) throw new Error("Failed to fetch consumables");
+    return res.json();
+  },
+
+  async getConsumable(id) {
+    const res = await fetch(`${API_BASE}/consumables/${id}`);
+    if (!res.ok) throw new Error("Failed to fetch consumable");
+    return res.json();
+  },
+
+  async getConsumableCategories() {
+    const res = await fetch(`${API_BASE}/consumables/categories`);
+    if (!res.ok) throw new Error("Failed to fetch consumable categories");
+    return res.json();
+  },
+
+  async createConsumable(consumable) {
+    const res = await fetch(`${API_BASE}/consumables`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(consumable),
+    });
+    if (!res.ok) throw new Error("Failed to create consumable");
+    return res.json();
+  },
+
+  async updateConsumable({ id, ...fields }) {
+    const res = await fetch(`${API_BASE}/consumables/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(fields),
+    });
+    if (!res.ok) throw new Error("Failed to update consumable");
+    return res.json();
+  },
+
+  async deleteConsumable(id) {
+    const res = await fetch(`${API_BASE}/consumables/${id}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) throw new Error("Failed to delete consumable");
+    return null;
+  },
 };
