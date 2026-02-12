@@ -35,7 +35,7 @@ export default function NotesEditor({
     <section className={styles.container}>
       <h3 className={styles.title}>Notes</h3>
       {isEditing ? (
-        <div>
+        <>
           <textarea
             value={editingNotes}
             onChange={(e) => setEditingNotes(e.target.value)}
@@ -52,7 +52,7 @@ export default function NotesEditor({
               cancel
             </Button>
           </div>
-        </div>
+        </>
       ) : (
         <div
           onClick={() => {

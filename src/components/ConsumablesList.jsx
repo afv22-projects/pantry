@@ -27,7 +27,7 @@ export default function ConsumablesList() {
   }
 
   return (
-    <div>
+    <>
       <GroupedList
         items={consumables || []}
         getCategory={(consumable) => consumable.category}
@@ -58,6 +58,6 @@ export default function ConsumablesList() {
         +
       </Button>
       {showForm && <ConsumableForm onClose={() => setShowForm(false)} />}
-    </div>
+    </>
   );
 }
