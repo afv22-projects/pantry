@@ -143,7 +143,6 @@ export default function RecipeDetail() {
         onAddTag={handleAddTag}
         onRemoveTag={handleRemoveTag}
         showNeededIndicator={true}
-        nameEditable={true}
       />
 
       <Button variant="danger" onClick={handleDelete}>

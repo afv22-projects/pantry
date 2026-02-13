@@ -37,8 +37,6 @@ export default function RecipeEditor({
   onAddTag,
   onRemoveTag,
   showNeededIndicator = false,
-  namePlaceholder = "recipe name",
-  nameEditable = true,
   isCreateMode = false,
 }) {
   const { data: allIngredients } = useIngredients();
@@ -113,22 +111,14 @@ export default function RecipeEditor({
   return (
     <>
       <section className={styles.nameContainer}>
-        {nameEditable ? (
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => onNameChange(e.target.value)}
-            onBlur={(e) => onNameChange(e.target.value.trim())}
-            className={styles.nameInput}
-            placeholder={namePlaceholder}
-          />
-        ) : (
-          <h2 className={styles.name}>
-            {name || (
-              <span className={styles.namePlaceholder}>{namePlaceholder}</span>
-            )}
-          </h2>
-        )}
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => onNameChange(e.target.value)}
+          onBlur={(e) => onNameChange(e.target.value.trim())}
+          className={styles.nameInput}
+          placeholder="recipe name"
+        />
       </section>
 
       <section className={styles.ingredientsContainer}>

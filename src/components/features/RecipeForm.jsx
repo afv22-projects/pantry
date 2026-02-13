@@ -54,7 +54,6 @@ export default function RecipeForm({ onClose }) {
           }
           showNeededIndicator={false}
           namePlaceholder="recipe name"
-          nameEditable={true}
           isCreateMode={true}
         />
 
