@@ -50,6 +50,7 @@ export default function RecipeForm({ onClose }) {
           ingredients={ingredients}
           onIngredientsChange={setIngredients}
           sources={sources}
+          tags={tags}
           onAddSource={(source) => setSources([...sources, source])}
           onRemoveSource={(index) =>
             setSources(sources.filter((_, i) => i !== index))

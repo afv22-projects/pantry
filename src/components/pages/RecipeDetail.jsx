@@ -54,18 +54,14 @@ export default function RecipeDetail() {
     // Find added ingredients
     for (const ingredient of newIngredients) {
       if (!oldIds.has(ingredient.id)) {
-        recipeActions.addIngredient.mutate({
-          ingredientName: ingredient.name,
-        });
+        recipeActions.addIngredient.mutate(ingredient.name);
       }
     }
 
     // Find removed ingredients
     for (const ingredient of ingredients) {
       if (!newIds.has(ingredient.id)) {
-        recipeActions.removeIngredient.mutate({
-          ingredientName: ingredient.name,
-        });
+        recipeActions.removeIngredient.mutate(ingredient.name);
       }
     }
   };
@@ -77,10 +73,8 @@ export default function RecipeDetail() {
 
   const handleDelete = () => {
     if (window.confirm("delete this recipe?")) {
-      recipeActions.delete.mutate({
-        onSuccess: () => {
-          navigate("/recipes");
-        },
+      navigate("/recipes");
+      recipeActions.delete.mutate(null, {
         onError: (error) => {
           console.error("Failed to delete recipe:", error);
           alert("Failed to delete recipe. Please try again.");
