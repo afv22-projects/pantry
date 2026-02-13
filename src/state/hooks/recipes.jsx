@@ -21,7 +21,7 @@ export function useRecipe(id) {
   });
 }
 
-// --- GLOBAL MUTATIONS ---
+// --- GLOBAL ACTIONS ---
 
 export function useCreateRecipe() {
   const qc = useQueryClient();
@@ -31,13 +31,13 @@ export function useCreateRecipe() {
   });
 }
 
-// --- UNIFIED ACTION HOOK (Per Recipe) ---
+// --- INDIVIDUAL ACTIONS ---
 
 export function useRecipeActions(id) {
   const qc = useQueryClient();
   const recipeId = Number(id);
-  const detailKey = ["recipes", id];
   const listKey = ["recipes"];
+  const detailKey = [...listKey, id];
 
   // Helper to apply optimistic updates to both the list and detail cache
   const applyOptimistic = async (updateFn) => {

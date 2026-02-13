@@ -1,10 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  useConsumable,
-  useToggleConsumableNeeded,
-  useUpdateConsumable,
-  useDeleteConsumable,
-} from "../../state";
+import { useConsumable, useConsumableActions } from "../../state";
 import ConsumableCategoryInput from "../features/ConsumableCategoryInput";
 import ItemDetail from "../features/ItemDetail";
 
@@ -13,16 +8,14 @@ export default function ConsumableDetail() {
   const navigate = useNavigate();
 
   const { data: consumable, isLoading } = useConsumable(id);
-  const toggleNeeded = useToggleConsumableNeeded();
-  const updateConsumable = useUpdateConsumable();
-  const deleteConsumable = useDeleteConsumable();
+  const consumableActions = useConsumableActions(id);
 
   const handleCategoryChange = (category) => {
-    updateConsumable.mutate({ id, category: category.toLowerCase() });
+    consumableActions.update.mutate({ category: category.toLowerCase() });
   };
 
   const handleDelete = () => {
-    deleteConsumable.mutate(id, {
+    consumableActions.delete.mutate({
       onSuccess: () => navigate("/consumables"),
     });
   };
@@ -39,7 +32,7 @@ export default function ConsumableDetail() {
           onChange={handleCategoryChange}
         />
       }
-      onToggleNeeded={() => toggleNeeded.mutate(consumable)}
+      onToggleNeeded={consumableActions.toggleNeeded.mutate}
       onDelete={handleDelete}
     />
   );
