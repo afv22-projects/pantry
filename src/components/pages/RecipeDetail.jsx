@@ -1,16 +1,9 @@
-import { useParams, useNavigate, Link, useRevalidator } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   useRecipe,
+  useRecipeActions,
   useIngredients,
-  useUpdateRecipe,
-  useDeleteRecipe,
-  useAddIngredientToRecipe,
-  useRemoveIngredientFromRecipe,
   useToggleNeeded,
-  useAddSourceToRecipe,
-  useRemoveSourceFromRecipe,
-  useAddTagToRecipe,
-  useRemoveTagFromRecipe,
 } from "../../state/index.js";
 import RecipeEditor from "../features/RecipeEditor.jsx";
 import { Button, BackLink, Loading } from "../common/index.jsx";
@@ -26,20 +19,8 @@ export default function RecipeDetail() {
 
   const { data: recipe, isLoading: recipeLoading } = useRecipe(id);
   const { data: allIngredients } = useIngredients();
-  const updateRecipe = useUpdateRecipe();
-  const deleteRecipe = useDeleteRecipe();
-  const addIngredientToRecipe = useAddIngredientToRecipe();
-  const removeIngredientFromRecipe = useRemoveIngredientFromRecipe();
+  const recipeActions = useRecipeActions(id);
   const toggleNeeded = useToggleNeeded();
-  const addSourceToRecipe = useAddSourceToRecipe();
-  const removeSourceFromRecipe = useRemoveSourceFromRecipe();
-  const addTagToRecipe = useAddTagToRecipe();
-  const removeTagFromRecipe = useRemoveTagFromRecipe();
-
-  // API returns ingredients embedded in recipe
-  const ingredients = recipe?.ingredients || [];
-  const sources = recipe?.sources || [];
-  const tags = recipe?.tags || [];
 
   if (recipeLoading) return <Loading />;
 
@@ -54,12 +35,16 @@ export default function RecipeDetail() {
     );
   }
 
+  const ingredients = recipe.ingredients;
+  const sources = recipe.sources;
+  const tags = recipe.tags;
+
   const handleNameChange = (newName) => {
-    updateRecipe.mutate({ id, name: newName });
+    recipeActions.update.mutate({ name: newName });
   };
 
   const handleNotesChange = (newNotes) => {
-    updateRecipe.mutate({ id, notes: newNotes });
+    recipeActions.update.mutate({ notes: newNotes });
   };
 
   const handleIngredientsChange = (newIngredients) => {
@@ -69,8 +54,7 @@ export default function RecipeDetail() {
     // Find added ingredients
     for (const ingredient of newIngredients) {
       if (!oldIds.has(ingredient.id)) {
-        addIngredientToRecipe.mutate({
-          recipeId: id,
+        recipeActions.addIngredient.mutate({
           ingredientName: ingredient.name,
         });
       }
@@ -79,8 +63,7 @@ export default function RecipeDetail() {
     // Find removed ingredients
     for (const ingredient of ingredients) {
       if (!newIds.has(ingredient.id)) {
-        removeIngredientFromRecipe.mutate({
-          recipeId: id,
+        recipeActions.removeIngredient.mutate({
           ingredientName: ingredient.name,
         });
       }
@@ -89,30 +72,12 @@ export default function RecipeDetail() {
 
   const handleToggleNeeded = (ingredientId) => {
     const ingredient = allIngredients?.find((i) => i.id === ingredientId);
-    if (ingredient) {
-      toggleNeeded.mutate(ingredient);
-    }
-  };
-
-  const handleAddSource = (source) => {
-    addSourceToRecipe.mutate({ recipeId: id, source });
-  };
-
-  const handleRemoveSource = (source) => {
-    removeSourceFromRecipe.mutate({ recipeId: id, source });
-  };
-
-  const handleAddTag = (tag) => {
-    addTagToRecipe.mutate({ recipeId: id, tag });
-  };
-
-  const handleRemoveTag = (tag) => {
-    removeTagFromRecipe.mutate({ recipeId: id, tag });
+    if (ingredient) toggleNeeded.mutate(ingredient);
   };
 
   const handleDelete = () => {
     if (window.confirm("delete this recipe?")) {
-      deleteRecipe.mutate(id, {
+      recipeActions.delete.mutate({
         onSuccess: () => {
           navigate("/recipes");
         },
@@ -138,10 +103,10 @@ export default function RecipeDetail() {
         onIngredientToggleNeeded={handleToggleNeeded}
         sources={sources}
         tags={tags}
-        onAddSource={handleAddSource}
-        onRemoveSource={handleRemoveSource}
-        onAddTag={handleAddTag}
-        onRemoveTag={handleRemoveTag}
+        onAddSource={recipeActions.addSource.mutate}
+        onRemoveSource={recipeActions.removeSource.mutate}
+        onAddTag={recipeActions.addTag.mutate}
+        onRemoveTag={recipeActions.removeTag.mutate}
         showNeededIndicator={true}
       />
 

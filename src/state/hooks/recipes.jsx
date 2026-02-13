@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "../api.jsx";
 
+// --- QUERIES ---
+
 export function useRecipes() {
   return useQuery({
     queryKey: ["recipes"],
@@ -19,177 +21,137 @@ export function useRecipe(id) {
   });
 }
 
+// --- GLOBAL MUTATIONS ---
+
 export function useCreateRecipe() {
   const qc = useQueryClient();
-
   return useMutation({
     mutationFn: api.createRecipe,
-
-    onSettled: () => {
-      qc.invalidateQueries({ queryKey: ["recipes"] });
-    },
+    onSettled: () => qc.invalidateQueries({ queryKey: ["recipes"] }),
   });
 }
 
-export function useUpdateRecipe() {
+// --- UNIFIED ACTION HOOK (Per Recipe) ---
+
+export function useRecipeActions(id) {
   const qc = useQueryClient();
+  const recipeId = Number(id);
+  const detailKey = ["recipes", id];
+  const listKey = ["recipes"];
 
-  return useMutation({
-    mutationFn: api.updateRecipe,
+  // Helper to apply optimistic updates to both the list and detail cache
+  const applyOptimistic = async (updateFn) => {
+    await qc.cancelQueries({ queryKey: listKey });
+    await qc.cancelQueries({ queryKey: detailKey });
 
-    onMutate: async (updated) => {
-      await qc.cancelQueries({ queryKey: ["recipes"] });
-      const previousList = qc.getQueryData(["recipes"]);
-      const previousDetail = qc.getQueryData(["recipes", updated.id]);
+    const prevList = qc.getQueryData(listKey);
+    const prevDetail = qc.getQueryData(detailKey);
 
-      qc.setQueryData(["recipes"], (old) =>
-        old?.map((r) => (r.id === updated.id ? { ...r, ...updated } : r)),
-      );
+    if (prevDetail) qc.setQueryData(detailKey, (old) => updateFn(old));
+    qc.setQueryData(listKey, (old) =>
+      old?.map((r) => (r.id === recipeId ? updateFn(r) : r)),
+    );
 
-      if (previousDetail) {
-        qc.setQueryData(["recipes", updated.id], (old) => ({
+    return { prevList, prevDetail };
+  };
+
+  const rollback = (context) => {
+    if (context?.prevList) qc.setQueryData(listKey, context.prevList);
+    if (context?.prevDetail) qc.setQueryData(detailKey, context.prevDetail);
+  };
+
+  const settle = () => qc.invalidateQueries({ queryKey: listKey });
+
+  return {
+    update: useMutation({
+      mutationFn: (updates) => api.updateRecipe({ ...updates, id: recipeId }),
+      onMutate: (updates) => applyOptimistic((old) => ({ ...old, ...updates })),
+      onError: (_err, _vars, ctx) => rollback(ctx),
+      onSettled: settle,
+    }),
+
+    delete: useMutation({
+      mutationFn: () => api.deleteRecipe(recipeId),
+      onMutate: async () => {
+        await qc.cancelQueries({ queryKey: listKey });
+        const prev = qc.getQueryData(listKey);
+        qc.setQueryData(listKey, (old) =>
+          old?.filter((r) => r.id !== recipeId),
+        );
+        return { prevList: prev };
+      },
+      onError: (_err, _vars, ctx) => rollback(ctx),
+      onSettled: settle,
+    }),
+
+    // 3. Ingredients
+    addIngredient: useMutation({
+      mutationFn: (name) => api.addIngredientToRecipe({ recipeId, name }),
+      onMutate: (name) =>
+        applyOptimistic((old) => ({
           ...old,
-          ...updated,
-        }));
-      }
+          ingredients: [...(old.ingredients || []), { name }],
+        })),
+      onError: (_err, _vars, ctx) => rollback(ctx),
+      onSettled: settle,
+    }),
 
-      return { previousList, previousDetail };
-    },
+    removeIngredient: useMutation({
+      mutationFn: (name) =>
+        api.removeIngredientFromRecipe({ recipeId, ingredientName: name }),
+      onMutate: (name) =>
+        applyOptimistic((old) => ({
+          ...old,
+          ingredients: old.ingredients?.filter((i) => i.name !== name),
+        })),
+      onError: (_err, _vars, ctx) => rollback(ctx),
+      onSettled: settle,
+    }),
 
-    onError: (_err, updated, context) => {
-      if (context?.previousList) {
-        qc.setQueryData(["recipes"], context.previousList);
-      }
-      if (context?.previousDetail) {
-        qc.setQueryData(["recipes", updated.id], context.previousDetail);
-      }
-    },
+    // 4. Tags
+    addTag: useMutation({
+      mutationFn: (tag) => api.addTagToRecipe({ recipeId, tag }),
+      onMutate: (tag) =>
+        applyOptimistic((old) => ({
+          ...old,
+          tags: [...(old.tags || []), tag],
+        })),
+      onError: (_err, _vars, ctx) => rollback(ctx),
+      onSettled: settle,
+    }),
 
-    onSettled: () => {
-      qc.invalidateQueries({ queryKey: ["recipes"] });
-    },
-  });
-}
+    removeTag: useMutation({
+      mutationFn: (tag) => api.removeTagFromRecipe({ recipeId, tag }),
+      onMutate: (tag) =>
+        applyOptimistic((old) => ({
+          ...old,
+          tags: old.tags?.filter((t) => t !== tag),
+        })),
+      onError: (_err, _vars, ctx) => rollback(ctx),
+      onSettled: settle,
+    }),
 
-export function useDeleteRecipe() {
-  const qc = useQueryClient();
+    // 5. Sources
+    addSource: useMutation({
+      mutationFn: (source) => api.addSourceToRecipe({ recipeId, source }),
+      onMutate: (source) =>
+        applyOptimistic((old) => ({
+          ...old,
+          sources: [...(old.sources || []), source],
+        })),
+      onError: (_err, _vars, ctx) => rollback(ctx),
+      onSettled: settle,
+    }),
 
-  return useMutation({
-    mutationFn: api.deleteRecipe,
-
-    onMutate: async (id) => {
-      await qc.cancelQueries({ queryKey: ["recipes"] });
-      const previous = qc.getQueryData(["recipes"]);
-
-      qc.setQueryData(["recipes"], (old) => old?.filter((r) => r.id !== id));
-
-      return { previous };
-    },
-
-    onError: (_err, _id, context) => {
-      if (context?.previous) {
-        qc.setQueryData(["recipes"], context.previous);
-      }
-    },
-
-    onSettled: () => {
-      qc.invalidateQueries({ queryKey: ["recipes"] });
-    },
-  });
-}
-
-export function useAddIngredientToRecipe() {
-  const qc = useQueryClient();
-
-  return useMutation({
-    mutationFn: api.addIngredientToRecipe,
-
-    onSettled: () => {
-      qc.invalidateQueries({ queryKey: ["recipes"] });
-    },
-  });
-}
-
-export function useRemoveIngredientFromRecipe() {
-  const qc = useQueryClient();
-
-  return useMutation({
-    mutationFn: api.removeIngredientFromRecipe,
-
-    onMutate: async ({ recipeId, ingredientName }) => {
-      await qc.cancelQueries({ queryKey: ["recipes", recipeId] });
-      const previous = qc.getQueryData(["recipes", recipeId]);
-
-      qc.setQueryData(["recipes", recipeId], (old) =>
-        old
-          ? {
-              ...old,
-              ingredients: old.ingredients?.filter(
-                (i) => i.name !== ingredientName,
-              ),
-            }
-          : old,
-      );
-
-      return { previous, recipeId };
-    },
-
-    onError: (_err, _vars, context) => {
-      if (context?.previous) {
-        qc.setQueryData(["recipes", context.recipeId], context.previous);
-      }
-    },
-
-    onSettled: () => {
-      qc.invalidateQueries({ queryKey: ["recipes"] });
-    },
-  });
-}
-
-export function useAddSourceToRecipe() {
-  const qc = useQueryClient();
-
-  return useMutation({
-    mutationFn: api.addSourceToRecipe,
-
-    onSettled: () => {
-      qc.invalidateQueries({ queryKey: ["recipes"] });
-    },
-  });
-}
-
-export function useRemoveSourceFromRecipe() {
-  const qc = useQueryClient();
-
-  return useMutation({
-    mutationFn: api.removeSourceFromRecipe,
-
-    onSettled: () => {
-      qc.invalidateQueries({ queryKey: ["recipes"] });
-    },
-  });
-}
-
-export function useAddTagToRecipe() {
-  const qc = useQueryClient();
-
-  return useMutation({
-    mutationFn: api.addTagToRecipe,
-
-    onSettled: () => {
-      qc.invalidateQueries({ queryKey: ["recipes"] });
-    },
-  });
-}
-
-export function useRemoveTagFromRecipe() {
-  const qc = useQueryClient();
-
-  return useMutation({
-    mutationFn: api.removeTagFromRecipe,
-
-    onSettled: () => {
-      qc.invalidateQueries({ queryKey: ["recipes"] });
-    },
-  });
+    removeSource: useMutation({
+      mutationFn: (source) => api.removeSourceFromRecipe({ recipeId, source }),
+      onMutate: (source) =>
+        applyOptimistic((old) => ({
+          ...old,
+          sources: old.sources?.filter((s) => s !== source),
+        })),
+      onError: (_err, _vars, ctx) => rollback(ctx),
+      onSettled: settle,
+    }),
+  };
 }
