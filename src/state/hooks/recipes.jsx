@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEntityMutation } from "./entities.jsx";
 import { api } from "../api.jsx";
+import { useEntityMutation } from "./entities.jsx";
 
 // --- QUERIES ---
 
@@ -35,20 +35,23 @@ export function useCreateRecipe() {
 // --- INDIVIDUAL ACTIONS ---
 
 export function useRecipeActions(id) {
-  const { createOptimisticMutation, createDeletionMutation, entityId } =
-    useEntityMutation("recipes", id);
+  const {
+    createOptimisticMutation,
+    createDeletionMutation,
+    entityId: recipeId,
+  } = useEntityMutation("recipes", id);
 
   return {
     update: useMutation(
       createOptimisticMutation({
-        mutationFn: (updates) => api.updateRecipe({ ...updates, id: entityId }),
+        mutationFn: (updates) => api.updateRecipe({ ...updates, id: recipeId }),
         updateCacheFn: (old, updates) => ({ ...old, ...updates }),
       }),
     ),
 
     delete: useMutation(
       createDeletionMutation({
-        deletionFn: () => api.deleteRecipe(entityId),
+        deletionFn: () => api.deleteRecipe(recipeId),
       }),
     ),
 
@@ -56,7 +59,7 @@ export function useRecipeActions(id) {
     addIngredient: useMutation(
       createOptimisticMutation({
         mutationFn: (ingredientName) =>
-          api.addIngredientToRecipe({ recipeId: entityId, ingredientName }),
+          api.addIngredientToRecipe({ recipeId: recipeId, ingredientName }),
         updateCacheFn: (old, name) => ({
           ...old,
           ingredients: [...(old.ingredients || []), { name }],
@@ -68,7 +71,7 @@ export function useRecipeActions(id) {
       createOptimisticMutation({
         mutationFn: (name) =>
           api.removeIngredientFromRecipe({
-            recipeId: entityId,
+            recipeId: recipeId,
             ingredientName: name,
           }),
         updateCacheFn: (old, name) => ({
@@ -81,7 +84,7 @@ export function useRecipeActions(id) {
     // Tags
     addTag: useMutation(
       createOptimisticMutation({
-        mutationFn: (tag) => api.addTagToRecipe({ recipeId: entityId, tag }),
+        mutationFn: (tag) => api.addTagToRecipe({ recipeId: recipeId, tag }),
         updateCacheFn: (old, tag) => ({
           ...old,
           tags: [...(old.tags || []), tag],
@@ -92,7 +95,7 @@ export function useRecipeActions(id) {
     removeTag: useMutation(
       createOptimisticMutation({
         mutationFn: (tag) =>
-          api.removeTagFromRecipe({ recipeId: entityId, tag }),
+          api.removeTagFromRecipe({ recipeId: recipeId, tag }),
         updateCacheFn: (old, tag) => ({
           ...old,
           tags: old.tags?.filter((t) => t !== tag),
@@ -104,7 +107,7 @@ export function useRecipeActions(id) {
     addSource: useMutation(
       createOptimisticMutation({
         mutationFn: (source) =>
-          api.addSourceToRecipe({ recipeId: entityId, source }),
+          api.addSourceToRecipe({ recipeId: recipeId, source }),
         updateCacheFn: (old, source) => ({
           ...old,
           sources: [...(old.sources || []), source],
@@ -115,7 +118,7 @@ export function useRecipeActions(id) {
     removeSource: useMutation(
       createOptimisticMutation({
         mutationFn: (source) =>
-          api.removeSourceFromRecipe({ recipeId: entityId, source }),
+          api.removeSourceFromRecipe({ recipeId: recipeId, source }),
         updateCacheFn: (old, source) => ({
           ...old,
           sources: old.sources?.filter((s) => s !== source),

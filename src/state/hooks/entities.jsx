@@ -28,7 +28,12 @@ export function useEntityMutation(baseKey, id) {
 
   const settle = () => qc.invalidateQueries({ queryKey: listKey });
 
-  // This returns a helper to build mutations quickly
+  /**
+   * Creates a mutation with optimistic updates for entity modifications.
+   * @param {Function} params.mutationFn - API call function that performs the mutation (e.g., updateRecipe)
+   * @param {Function} params.updateCacheFn - Function that receives (oldEntity, variables) and returns the optimistically updated entity
+   * @returns {Object} React Query mutation configuration with optimistic updates
+   */
   const createOptimisticMutation = ({ mutationFn, updateCacheFn }) => ({
     mutationFn,
     onMutate: (vars) => {
@@ -38,6 +43,11 @@ export function useEntityMutation(baseKey, id) {
     onSettled: settle,
   });
 
+  /**
+   * Creates a mutation for entity deletion with optimistic removal from cache.
+   * @param {Function} params.deletionFn - API call function that performs the deletion (e.g., deleteRecipe)
+   * @returns {Object} React Query mutation configuration with optimistic deletion
+   */
   const createDeletionMutation = ({ deletionFn }) => ({
     mutationFn: deletionFn,
     onMutate: async () => {
