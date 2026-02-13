@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Markdown from "react-markdown";
 
 const styles = {
@@ -190,25 +190,27 @@ export default function MarkdownEditor({
     }
   }, [isEditing]);
 
-  useEffect(() => {
-    setEditingValue(value);
-  }, [value]);
-
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     onChange(editingValue);
     setIsEditing(false);
-  };
+  }, [editingValue, onChange]);
 
   const handleKeyDown = (e) => {
-    if (e.key === "Escape") {
-      handleSave();
-    }
+    if (e.key === "Escape") handleSave();
   };
 
-  const handleClickOutside = (e) => {
-    if (textareaRef.current && !textareaRef.current.contains(e.target)) {
-      handleSave();
-    }
+  const handleClickOutside = useCallback(
+    (e) => {
+      if (textareaRef.current && !textareaRef.current.contains(e.target)) {
+        handleSave();
+      }
+    },
+    [handleSave],
+  );
+
+  const handleStartEditing = () => {
+    setEditingValue(value);
+    setIsEditing(true);
   };
 
   useEffect(() => {
@@ -218,7 +220,7 @@ export default function MarkdownEditor({
         document.removeEventListener("mousedown", handleClickOutside);
       };
     }
-  }, [isEditing, editingValue]);
+  }, [isEditing, handleClickOutside]);
 
   return (
     <section className={styles.container}>
@@ -234,20 +236,12 @@ export default function MarkdownEditor({
           onKeyDown={handleKeyDown}
         />
       ) : (
-        <div
-          onClick={() => {
-            setEditingValue(value);
-            setIsEditing(true);
-          }}
-          className={styles.display}
-        >
-          {value ? (
-            <div className={styles.markdownContent}>
-              <Markdown components={markdownComponents}>{value}</Markdown>
-            </div>
-          ) : (
-            <p className={styles.placeholder}>{placeholder}</p>
-          )}
+        <div onClick={handleStartEditing} className={styles.display}>
+          <div className={value ? styles.markdownContent : styles.placeholder}>
+            <Markdown components={markdownComponents}>
+              {value ? value : placeholder}
+            </Markdown>
+          </div>
         </div>
       )}
     </section>

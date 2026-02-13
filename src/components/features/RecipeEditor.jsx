@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useIngredients } from "../../state/index.js";
 import ChipInput from "./ChipInput.jsx";
-import NotesEditor from "./NotesEditor.jsx";
+import MarkdownEditor from "../common/MarkdownEditor.jsx";
 import RecipeSourceCard from "./RecipeSourceCard.jsx";
 import RecipeSourceInput from "./RecipeSourceInput.jsx";
 
@@ -136,7 +136,13 @@ export default function RecipeEditor({
         />
       </section>
 
-      <NotesEditor notes={notes} onNotesChange={onNotesChange} />
+      <MarkdownEditor
+        value={notes}
+        onChange={onNotesChange}
+        placeholder="click to add notes"
+        title="Notes"
+        rows={4}
+      />
 
       {onAddSource && onRemoveSource && (
         <section className={styles.sourceContainer}>
