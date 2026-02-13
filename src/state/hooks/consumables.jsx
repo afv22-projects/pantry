@@ -1,6 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "../api.jsx";
-import { useEntityMutation } from "./entities.jsx";
+import {
+  optimisticEntityUpdate,
+  optimisticDelete,
+  optimisticCreate,
+} from "./queryUtils.jsx";
 
 // --- QUERIES ---
 
@@ -35,66 +39,57 @@ export function useCreateConsumable() {
 
   return useMutation({
     mutationFn: api.createConsumable,
-
-    onMutate: async (newConsumable) => {
-      await qc.cancelQueries({ queryKey: ["consumables"] });
-      const previous = qc.getQueryData(["consumables"]);
-
-      qc.setQueryData(["consumables"], (old) => [
-        ...(old || []),
-        {
-          ...newConsumable,
-          id: `temp-${Date.now()}`,
-          needed: newConsumable.needed ?? false,
-        },
-      ]);
-
-      return { previous };
-    },
-
-    onError: (_err, _item, context) => {
-      if (context?.previous) {
-        qc.setQueryData(["consumables"], context.previous);
-      }
-    },
-
-    onSettled: () => {
-      qc.invalidateQueries({ queryKey: ["consumables"] });
-    },
+    onMutate: async (newConsumable) =>
+      optimisticCreate(qc, ["consumables"], {
+        ...newConsumable,
+        id: `temp-${Date.now()}`,
+        needed: newConsumable.needed ?? false,
+      }),
+    onError: (_err, _vars, ctx) => ctx?.rollback(),
+    onSettled: () => qc.invalidateQueries({ queryKey: ["consumables"] }),
   });
 }
 
 // --- INDIVIDUAL ACTIONS ---
 
 export function useConsumableActions(id) {
-  const {
-    createOptimisticMutation,
-    createDeletionMutation,
-    entityId: consumableId,
-  } = useEntityMutation("consumables", id);
+  const qc = useQueryClient();
+  const consumableId = Number(id);
+  const listKey = ["consumables"];
+  const detailKey = ["consumables", consumableId];
 
   return {
-    update: useMutation(
-      createOptimisticMutation({
-        mutationFn: (updates) =>
-          api.updateConsumable({ ...updates, id: consumableId }),
-        updateCacheFn: (old, updates) => ({ ...old, ...updates }),
-      }),
-    ),
+    update: useMutation({
+      mutationFn: (updates) =>
+        api.updateConsumable({ ...updates, id: consumableId }),
+      onMutate: async (vars) =>
+        optimisticEntityUpdate(qc, listKey, detailKey, consumableId, (old) => ({
+          ...old,
+          ...vars,
+        })),
+      onError: (_err, _vars, ctx) => ctx?.rollback(),
+      onSettled: () => qc.invalidateQueries({ queryKey: listKey }),
+    }),
 
-    delete: useMutation(
-      createDeletionMutation({
-        deletionFn: () => api.deleteConsumable(consumableId),
-      }),
-    ),
+    delete: useMutation({
+      mutationFn: () => api.deleteConsumable(consumableId),
+      onMutate: async () =>
+        optimisticDelete(qc, listKey, detailKey, consumableId),
+      onError: (_err, _vars, ctx) => ctx?.rollback(),
+      onSettled: () => qc.invalidateQueries({ queryKey: listKey }),
+    }),
 
-    toggleNeeded: useMutation(
-      createOptimisticMutation({
-        mutationFn: (updates) =>
-          api.updateConsumable({ id: consumableId, needed: !updates.needed }),
-        updateCacheFn: (old, updates) => ({ ...old, needed: !updates.needed }),
-      }),
-    ),
+    toggleNeeded: useMutation({
+      mutationFn: (updates) =>
+        api.updateConsumable({ id: consumableId, needed: !updates.needed }),
+      onMutate: async (vars) =>
+        optimisticEntityUpdate(qc, listKey, detailKey, consumableId, (old) => ({
+          ...old,
+          needed: !vars.needed,
+        })),
+      onError: (_err, _vars, ctx) => ctx?.rollback(),
+      onSettled: () => qc.invalidateQueries({ queryKey: listKey }),
+    }),
   };
 }
 

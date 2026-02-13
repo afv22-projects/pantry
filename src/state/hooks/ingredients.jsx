@@ -1,5 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "../api.jsx";
+import {
+  optimisticEntityUpdate,
+  optimisticDelete,
+  optimisticCreate,
+  optimisticListUpdate,
+} from "./queryUtils.jsx";
 
 export function useIngredients() {
   return useQuery({
@@ -25,135 +31,94 @@ export function useCategories() {
   });
 }
 
-export function useToggleNeeded() {
-  const qc = useQueryClient();
-
-  return useMutation({
-    mutationFn: (ingredient) =>
-      api.updateIngredient({ id: ingredient.id, needed: !ingredient.needed }),
-
-    onMutate: async (ingredient) => {
-      await qc.cancelQueries({ queryKey: ["ingredients"] });
-      const previous = qc.getQueryData(["ingredients"]);
-
-      qc.setQueryData(["ingredients"], (old) =>
-        old?.map((i) =>
-          i.id === ingredient.id
-            ? { ...i, needed: !i.needed }
-            : i,
-        ),
-      );
-
-      return { previous };
-    },
-
-    onError: (_err, _item, context) => {
-      if (context?.previous) {
-        qc.setQueryData(["ingredients"], context.previous);
-      }
-    },
-
-    onSettled: () => {
-      qc.invalidateQueries({ queryKey: ["ingredients"] });
-      // Also invalidate recipes since they embed ingredient data (including needed status)
-      qc.invalidateQueries({ queryKey: ["recipes"] });
-    },
-  });
-}
+// --- GLOBAL ACTIONS ---
 
 export function useCreateIngredient() {
   const qc = useQueryClient();
 
   return useMutation({
     mutationFn: api.createIngredient,
-
-    onMutate: async (newIngredient) => {
-      await qc.cancelQueries({ queryKey: ["ingredients"] });
-      const previous = qc.getQueryData(["ingredients"]);
-
-      qc.setQueryData(["ingredients"], (old) => [
-        ...(old || []),
-        {
-          ...newIngredient,
-          id: `temp-${Date.now()}`,
-          needed: newIngredient.needed ?? false,
-        },
-      ]);
-
-      return { previous };
-    },
-
-    onError: (_err, _item, context) => {
-      if (context?.previous) {
-        qc.setQueryData(["ingredients"], context.previous);
-      }
-    },
-
-    onSettled: () => {
-      qc.invalidateQueries({ queryKey: ["ingredients"] });
-    },
+    onMutate: async (newIngredient) =>
+      optimisticCreate(qc, ["ingredients"], {
+        ...newIngredient,
+        id: `temp-${Date.now()}`,
+        needed: newIngredient.needed ?? false,
+      }),
+    onError: (_err, _vars, ctx) => ctx?.rollback(),
+    onSettled: () => qc.invalidateQueries({ queryKey: ["ingredients"] }),
   });
 }
 
-export function useUpdateIngredient() {
+// --- INDIVIDUAL ACTIONS ---
+
+export function useIngredientActions(id) {
   const qc = useQueryClient();
+  const ingredientId = Number(id);
+  const listKey = ["ingredients"];
+  const detailKey = ["ingredients", ingredientId];
 
-  return useMutation({
-    mutationFn: api.updateIngredient,
+  return {
+    update: useMutation({
+      mutationFn: (updates) =>
+        api.updateIngredient({ ...updates, id: ingredientId }),
+      onMutate: async (vars) =>
+        optimisticEntityUpdate(qc, listKey, detailKey, ingredientId, (old) => ({
+          ...old,
+          ...vars,
+        })),
+      onError: (_err, _vars, ctx) => ctx?.rollback(),
+      onSettled: () => qc.invalidateQueries({ queryKey: listKey }),
+    }),
 
-    onMutate: async (updated) => {
-      await qc.cancelQueries({ queryKey: ["ingredients"] });
-      const previous = qc.getQueryData(["ingredients"]);
+    delete: useMutation({
+      mutationFn: () => api.deleteIngredient(ingredientId),
+      onMutate: async () =>
+        optimisticDelete(qc, listKey, detailKey, ingredientId),
+      onError: (_err, _vars, ctx) => ctx?.rollback(),
+      onSettled: () => {
+        qc.invalidateQueries({ queryKey: listKey });
+        // Also invalidate recipes since they embed ingredients
+        qc.invalidateQueries({ queryKey: ["recipes"] });
+      },
+    }),
 
-      qc.setQueryData(["ingredients"], (old) =>
-        old?.map((i) =>
-          i.id === updated.id
-            ? { ...i, ...updated }
-            : i,
-        ),
-      );
-
-      return { previous };
-    },
-
-    onError: (_err, _item, context) => {
-      if (context?.previous) {
-        qc.setQueryData(["ingredients"], context.previous);
-      }
-    },
-
-    onSettled: () => {
-      qc.invalidateQueries({ queryKey: ["ingredients"] });
-    },
-  });
+    toggleNeeded: useMutation({
+      mutationFn: (vars) =>
+        api.updateIngredient({ id: ingredientId, needed: !vars.needed }),
+      onMutate: async (vars) =>
+        optimisticEntityUpdate(qc, listKey, detailKey, ingredientId, (old) => ({
+          ...old,
+          needed: !vars.needed,
+        })),
+      onError: (_err, _vars, ctx) => ctx?.rollback(),
+      onSettled: () => {
+        qc.invalidateQueries({ queryKey: listKey });
+        // Also invalidate recipes since they embed ingredient data (including needed status)
+        qc.invalidateQueries({ queryKey: ["recipes"] });
+      },
+    }),
+  };
 }
 
-export function useDeleteIngredient() {
+// --- BACKWARD COMPATIBILITY ---
+// These hooks are kept for backward compatibility with existing code.
+// New code should use useIngredientActions(id) instead.
+
+export function useToggleNeeded() {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: api.deleteIngredient,
-
-    onMutate: async (id) => {
-      await qc.cancelQueries({ queryKey: ["ingredients"] });
-      const previous = qc.getQueryData(["ingredients"]);
-
-      qc.setQueryData(["ingredients"], (old) =>
-        old?.filter((i) => i.id !== id),
-      );
-
-      return { previous };
-    },
-
-    onError: (_err, _id, context) => {
-      if (context?.previous) {
-        qc.setQueryData(["ingredients"], context.previous);
-      }
-    },
-
+    mutationFn: (ingredient) =>
+      api.updateIngredient({ id: ingredient.id, needed: !ingredient.needed }),
+    onMutate: async (ingredient) =>
+      optimisticListUpdate(qc, ["ingredients"], ingredient.id, (old) => ({
+        ...old,
+        needed: !old.needed,
+      })),
+    onError: (_err, _vars, ctx) => ctx?.rollback(),
     onSettled: () => {
       qc.invalidateQueries({ queryKey: ["ingredients"] });
-      // Also invalidate recipes since they embed ingredients
+      // Also invalidate recipes since they embed ingredient data (including needed status)
       qc.invalidateQueries({ queryKey: ["recipes"] });
     },
   });

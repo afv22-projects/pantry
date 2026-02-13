@@ -1,12 +1,6 @@
 import { useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  useIngredient,
-  useRecipes,
-  useToggleNeeded,
-  useUpdateIngredient,
-  useDeleteIngredient,
-} from "../../state";
+import { useIngredient, useIngredientActions, useRecipes } from "../../state";
 import CategoryInput from "../features/CategoryInput";
 import ItemDetail from "../features/ItemDetail";
 
@@ -16,9 +10,7 @@ export default function IngredientDetail() {
 
   const { data: ingredient, isLoading: ingredientLoading } = useIngredient(id);
   const { data: recipes, isLoading: recipesLoading } = useRecipes();
-  const toggleNeeded = useToggleNeeded();
-  const updateIngredient = useUpdateIngredient();
-  const deleteIngredient = useDeleteIngredient();
+  const ingredientActions = useIngredientActions(id);
 
   const recipesUsingIngredient = useMemo(() => {
     if (!ingredient || !recipes) return [];
@@ -30,11 +22,11 @@ export default function IngredientDetail() {
   }, [ingredient, recipes, id]);
 
   const handleCategoryChange = (category) => {
-    updateIngredient.mutate({ id, category: category.toLowerCase() });
+    ingredientActions.update.mutate({ category: category.toLowerCase() });
   };
 
   const handleDelete = () => {
-    deleteIngredient.mutate(id, {
+    ingredientActions.delete.mutate(undefined, {
       onSuccess: () => navigate("/ingredients"),
     });
   };
@@ -60,7 +52,7 @@ export default function IngredientDetail() {
           link: `/recipes/${recipe.id}`,
         })),
       }}
-      onToggleNeeded={() => toggleNeeded.mutate(ingredient)}
+      onToggleNeeded={() => ingredientActions.toggleNeeded.mutate(ingredient)}
       onDelete={handleDelete}
     />
   );

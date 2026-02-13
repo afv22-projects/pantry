@@ -74,7 +74,7 @@ export default function RecipeDetail() {
   const handleDelete = () => {
     if (window.confirm("delete this recipe?")) {
       navigate("/recipes");
-      recipeActions.delete.mutate(null, {
+      recipeActions.delete.mutate(undefined, {
         onError: (error) => {
           console.error("Failed to delete recipe:", error);
           alert("Failed to delete recipe. Please try again.");

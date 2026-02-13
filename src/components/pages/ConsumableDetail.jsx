@@ -15,7 +15,7 @@ export default function ConsumableDetail() {
   };
 
   const handleDelete = () => {
-    consumableActions.delete.mutate({
+    consumableActions.delete.mutate(undefined, {
       onSuccess: () => navigate("/consumables"),
     });
   };
