@@ -178,6 +178,24 @@ export const api = {
     return null;
   },
 
+  async addTagToRecipe({ recipeId, tag }) {
+    const res = await fetch(
+      `${API_BASE}/recipes/${recipeId}/tags?tag=${encodeURIComponent(tag)}`,
+      { method: "POST" },
+    );
+    if (!res.ok) throw new Error("Failed to add tag to recipe");
+    return res.json();
+  },
+
+  async removeTagFromRecipe({ recipeId, tag }) {
+    const res = await fetch(
+      `${API_BASE}/recipes/${recipeId}/tags?tag=${encodeURIComponent(tag)}`,
+      { method: "DELETE" },
+    );
+    if (!res.ok) throw new Error("Failed to remove tag from recipe");
+    return null;
+  },
+
   async getConsumables() {
     const res = await fetch(`${API_BASE}/consumables`);
     if (!res.ok) throw new Error("Failed to fetch consumables");

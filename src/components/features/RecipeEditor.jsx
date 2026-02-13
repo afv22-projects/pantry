@@ -31,8 +31,11 @@ export default function RecipeEditor({
   onIngredientsChange,
   onIngredientToggleNeeded,
   sources = [],
+  tags = [],
   onAddSource,
   onRemoveSource,
+  onAddTag,
+  onRemoveTag,
   showNeededIndicator = false,
   namePlaceholder = "recipe name",
   nameEditable = true,
@@ -147,7 +150,7 @@ export default function RecipeEditor({
 
       {onAddSource && onRemoveSource && (
         <section className={styles.sourceContainer}>
-          <h3 className={styles.sourceTitle}>Source</h3>
+          <h3 className={styles.sourceTitle}>Sources</h3>
           {sources.length > 0 && (
             <div className={styles.sourceList}>
               {sources.map((source, index) => (
@@ -161,6 +164,25 @@ export default function RecipeEditor({
             </div>
           )}
           <RecipeSourceInput onAddSource={onAddSource} />
+        </section>
+      )}
+
+      {onAddTag && onRemoveTag && (
+        <section className={styles.sourceContainer}>
+          <h3 className={styles.sourceTitle}>Tags</h3>
+          {tags.length > 0 && (
+            <div className={styles.sourceList}>
+              {tags.map((tag, index) => (
+                <RecipeSourceCard
+                  key={index}
+                  source={tag}
+                  index={index}
+                  onRemoveSource={onRemoveTag}
+                />
+              ))}
+            </div>
+          )}
+          <RecipeSourceInput onAddSource={onAddTag} />
         </section>
       )}
     </>

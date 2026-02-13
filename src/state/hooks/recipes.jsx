@@ -43,11 +43,7 @@ export function useUpdateRecipe() {
       const previousDetail = qc.getQueryData(["recipes", updated.id]);
 
       qc.setQueryData(["recipes"], (old) =>
-        old?.map((r) =>
-          r.id === updated.id
-            ? { ...r, ...updated }
-            : r,
-        ),
+        old?.map((r) => (r.id === updated.id ? { ...r, ...updated } : r)),
       );
 
       if (previousDetail) {
@@ -167,6 +163,30 @@ export function useRemoveSourceFromRecipe() {
 
   return useMutation({
     mutationFn: api.removeSourceFromRecipe,
+
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ["recipes"] });
+    },
+  });
+}
+
+export function useAddTagToRecipe() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: api.addTagToRecipe,
+
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ["recipes"] });
+    },
+  });
+}
+
+export function useRemoveTagFromRecipe() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: api.removeTagFromRecipe,
 
     onSettled: () => {
       qc.invalidateQueries({ queryKey: ["recipes"] });

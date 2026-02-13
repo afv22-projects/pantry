@@ -1,4 +1,4 @@
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate, Link, useRevalidator } from "react-router-dom";
 import {
   useRecipe,
   useIngredients,
@@ -9,6 +9,8 @@ import {
   useToggleNeeded,
   useAddSourceToRecipe,
   useRemoveSourceFromRecipe,
+  useAddTagToRecipe,
+  useRemoveTagFromRecipe,
 } from "../../state/index.js";
 import RecipeEditor from "../features/RecipeEditor.jsx";
 import { Button, BackLink, Loading } from "../common/index.jsx";
@@ -31,10 +33,13 @@ export default function RecipeDetail() {
   const toggleNeeded = useToggleNeeded();
   const addSourceToRecipe = useAddSourceToRecipe();
   const removeSourceFromRecipe = useRemoveSourceFromRecipe();
+  const addTagToRecipe = useAddTagToRecipe();
+  const removeTagFromRecipe = useRemoveTagFromRecipe();
 
   // API returns ingredients embedded in recipe
   const ingredients = recipe?.ingredients || [];
   const sources = recipe?.sources || [];
+  const tags = recipe?.tags || [];
 
   if (recipeLoading) return <Loading />;
 
@@ -97,6 +102,14 @@ export default function RecipeDetail() {
     removeSourceFromRecipe.mutate({ recipeId: id, source });
   };
 
+  const handleAddTag = (tag) => {
+    addTagToRecipe.mutate({ recipeId: id, tag });
+  };
+
+  const handleRemoveTag = (tag) => {
+    removeTagFromRecipe.mutate({ recipeId: id, tag });
+  };
+
   const handleDelete = () => {
     if (window.confirm("delete this recipe?")) {
       deleteRecipe.mutate(id, {
@@ -124,8 +137,11 @@ export default function RecipeDetail() {
         onIngredientsChange={handleIngredientsChange}
         onIngredientToggleNeeded={handleToggleNeeded}
         sources={sources}
+        tags={tags}
         onAddSource={handleAddSource}
         onRemoveSource={handleRemoveSource}
+        onAddTag={handleAddTag}
+        onRemoveTag={handleRemoveTag}
         showNeededIndicator={true}
         nameEditable={true}
       />
