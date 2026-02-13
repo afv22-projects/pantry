@@ -17,6 +17,7 @@ export default function RecipeForm({ onClose }) {
   const [notes, setNotes] = useState("");
   const [ingredients, setIngredients] = useState([]);
   const [sources, setSources] = useState([]);
+  const [tags, setTags] = useState([]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -27,6 +28,7 @@ export default function RecipeForm({ onClose }) {
       notes,
       ingredients: ingredients.map((i) => i.name),
       sources,
+      tags,
     };
 
     createRecipe.mutate(recipeDetails, {
@@ -52,6 +54,8 @@ export default function RecipeForm({ onClose }) {
           onRemoveSource={(index) =>
             setSources(sources.filter((_, i) => i !== index))
           }
+          onAddTag={(tag) => setTags([...tags, tag])}
+          onRemoveTag={(index) => setTags(tags.filter((_, i) => i !== index))}
           showNeededIndicator={false}
           namePlaceholder="recipe name"
           isCreateMode={true}
