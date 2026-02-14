@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.1](https://github.com/afv22-projects/pantry/compare/v1.6.0...v1.6.1) (2026-02-14)
+
+
+### Bug Fixes
+
+* don't navigate to ingredient details on creation ([b0cb8b7](https://github.com/afv22-projects/pantry/commit/b0cb8b7c438e2a73944951fe11bf9ca858aaab7f))
+
 ## [1.6.0](https://github.com/afv22-projects/pantry/compare/v1.5.2...v1.6.0) (2026-02-14)
 
 
