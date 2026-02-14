@@ -11,7 +11,7 @@ export default function RecipeIngredientChip({ ingredient, showNeeded }) {
   const handleClick = (e) => {
     if (!showNeeded || !ingredient.id) return;
     e.stopPropagation();
-    ingredientActions.update.mutate({ needed: ingredient.needed });
+    ingredientActions.update.mutate({ needed: !ingredient.needed });
   };
 
   return (

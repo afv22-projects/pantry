@@ -66,7 +66,10 @@ export function useIngredientActions(id) {
           ...vars,
         })),
       onError: (_err, _vars, ctx) => ctx?.rollback(),
-      onSettled: () => qc.invalidateQueries({ queryKey: listKey }),
+      onSettled: () => {
+        qc.invalidateQueries({ queryKey: listKey });
+        qc.invalidateQueries({ queryKey: ["recipes"] });
+      },
     }),
 
     delete: useMutation({
@@ -76,7 +79,6 @@ export function useIngredientActions(id) {
       onError: (_err, _vars, ctx) => ctx?.rollback(),
       onSettled: () => {
         qc.invalidateQueries({ queryKey: listKey });
-        // Also invalidate recipes since they embed ingredients
         qc.invalidateQueries({ queryKey: ["recipes"] });
       },
     }),
