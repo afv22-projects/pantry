@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/afv22-projects/pantry/compare/v1.5.2...v1.6.0) (2026-02-14)
+
+
+### Features
+
+* add recipe tag filtering ([9a952cf](https://github.com/afv22-projects/pantry/commit/9a952cf0f03cbba19adad64c9c105687eee22be3))
+
 ## [1.5.2](https://github.com/afv22-projects/pantry/compare/v1.5.1...v1.5.2) (2026-02-14)
 
 
