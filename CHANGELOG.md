@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.5.0](https://github.com/afv22-projects/pantry/compare/v1.4.0...v1.5.0) (2026-02-14)
+
+
+### Features
+
+* add tagging to recipe details ([a6d73b7](https://github.com/afv22-projects/pantry/commit/a6d73b74450f8e99f4b6fca93ea08f990e9c837d))
+* show tags in recipe details view ([8c78d37](https://github.com/afv22-projects/pantry/commit/8c78d37f74cd5e21cfa96cc4017b6c9fdc636d78))
+
+
+### Bug Fixes
+
+* address lint errors in md editor ([04d3c4a](https://github.com/afv22-projects/pantry/commit/04d3c4a5f24e92d38ce467873a65f7c20d5b2fc8))
+* include tag in recipe creation ([6e9fe01](https://github.com/afv22-projects/pantry/commit/6e9fe01cc460e9789ab3a3ec6722c9635f5324a3))
+
 ## [1.4.0](https://github.com/afv22-projects/pantry/compare/v1.3.0...v1.4.0) (2026-02-12)
 
 
