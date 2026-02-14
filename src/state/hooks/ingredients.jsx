@@ -80,22 +80,5 @@ export function useIngredientActions(id) {
         qc.invalidateQueries({ queryKey: ["recipes"] });
       },
     }),
-
-    toggleNeeded: useMutation({
-      mutationFn: (vars) =>
-        api.updateIngredient({ id: ingredientId, needed: !vars.needed }),
-      onMutate: async (vars) =>
-        optimisticEntityUpdate(qc, listKey, detailKey, ingredientId, (old) => ({
-          ...old,
-          needed: !vars.needed,
-        })),
-      onError: (_err, _vars, ctx) => ctx?.rollback(),
-      onSettled: () => {
-        qc.invalidateQueries({ queryKey: listKey });
-        // Also invalidate recipes since they embed ingredient data (including needed status)
-        qc.invalidateQueries({ queryKey: ["recipes"] });
-      },
-    }),
   };
 }
-

@@ -8,7 +8,11 @@ export default function IngredientCard({ ingredient }) {
     <ItemCard
       name={ingredient.name}
       needed={ingredient.needed}
-      onToggle={() => ingredientActions.toggleNeeded.mutate()}
+      onToggle={() =>
+        ingredientActions.update.mutate({
+          needed: !ingredient.needed,
+        })
+      }
       linkTo={`/ingredients/${ingredient.id}`}
     />
   );

@@ -32,7 +32,9 @@ export default function ConsumableDetail() {
           onChange={handleCategoryChange}
         />
       }
-      onToggleNeeded={consumableActions.toggleNeeded.mutate}
+      onToggleNeeded={() =>
+        consumableActions.update.mutate({ needed: !consumable.needed })
+      }
       onDelete={handleDelete}
     />
   );

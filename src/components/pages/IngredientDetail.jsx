@@ -52,7 +52,11 @@ export default function IngredientDetail() {
           link: `/recipes/${recipe.id}`,
         })),
       }}
-      onToggleNeeded={() => ingredientActions.toggleNeeded.mutate(ingredient)}
+      onToggleNeeded={() =>
+        ingredientActions.update.mutate({
+          needed: !ingredient.needed,
+        })
+      }
       onDelete={handleDelete}
     />
   );

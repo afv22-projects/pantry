@@ -8,7 +8,11 @@ export default function ConsumableCard({ consumable }) {
     <ItemCard
       name={consumable.name}
       needed={consumable.needed}
-      onToggle={() => consumableActions.toggleNeeded.mutate()}
+      onToggle={() =>
+        consumableActions.update.mutate({
+          needed: !consumable.needed,
+        })
+      }
       linkTo={`/consumables/${consumable.id}`}
     />
   );

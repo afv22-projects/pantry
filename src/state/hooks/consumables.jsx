@@ -78,17 +78,5 @@ export function useConsumableActions(id) {
       onError: (_err, _vars, ctx) => ctx?.rollback(),
       onSettled: () => qc.invalidateQueries({ queryKey: listKey }),
     }),
-
-    toggleNeeded: useMutation({
-      mutationFn: (updates) =>
-        api.updateConsumable({ id: consumableId, needed: !updates.needed }),
-      onMutate: async (vars) =>
-        optimisticEntityUpdate(qc, listKey, detailKey, consumableId, (old) => ({
-          ...old,
-          needed: !vars.needed,
-        })),
-      onError: (_err, _vars, ctx) => ctx?.rollback(),
-      onSettled: () => qc.invalidateQueries({ queryKey: listKey }),
-    }),
   };
 }
