@@ -18,7 +18,11 @@ export default function ConsumablesList() {
         getCategory={(consumable) => consumable.category}
         emptyMessage="no consumables yet. add one below."
         renderItem={(consumable) => (
-          <ConsumableCard key={consumable.id} consumable={consumable} />
+          <ConsumableCard
+            key={consumable.id}
+            consumable={consumable}
+            linkTo={`/consumables/${consumable.id}`}
+          />
         )}
       />
 

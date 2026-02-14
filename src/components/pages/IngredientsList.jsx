@@ -23,7 +23,11 @@ export default function IngredientsList() {
         getCategory={(ingredient) => ingredient.category}
         emptyMessage="no ingredients yet. add one below."
         renderItem={(ingredient) => (
-          <IngredientCard key={ingredient.id} ingredient={ingredient} />
+          <IngredientCard
+            key={ingredient.id}
+            ingredient={ingredient}
+            linkTo={`/ingredients/${ingredient.id}`}
+          />
         )}
       />
 
