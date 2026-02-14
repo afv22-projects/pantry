@@ -1,52 +1,8 @@
 import { useMemo } from "react";
-import {
-  useIngredients,
-  useIngredientActions,
-  useConsumables,
-  useConsumableActions,
-} from "../../state";
-import {
-  Button,
-  Card,
-  EmptyState,
-  GroupedList,
-  Loading,
-  ErrorMessage,
-} from "../common";
-import { CheckmarkIcon } from "../icons";
-
-const styles = {
-  cardContainer: "flex items-center justify-between",
-  itemContent: "flex items-center gap-3",
-  itemName: "text-text lowercase",
-};
-
-function ItemButton({ name, onToggle }) {
-  return (
-    <Card className={styles.cardContainer}>
-      <div className={styles.itemContent}>
-        <Button variant="checkbox" active={true} onClick={onToggle}>
-          <CheckmarkIcon />
-        </Button>
-        <span className={styles.itemName}>{name}</span>
-      </div>
-    </Card>
-  );
-}
-
-function IngredientButton({ item }) {
-  const ingredientActions = useIngredientActions(item.id);
-  const handleToggle = () => ingredientActions.toggleNeeded.mutate();
-
-  return <ItemButton name={item.name} onToggle={handleToggle} />;
-}
-
-function ConsumableButton({ item }) {
-  const consumableActions = useConsumableActions(item.id);
-  const handleToggle = () => consumableActions.toggleNeeded.mutate();
-
-  return <ItemButton name={item.name} onToggle={handleToggle} />;
-}
+import { useIngredients, useConsumables } from "../../state";
+import { EmptyState, GroupedList, Loading, ErrorMessage } from "../common";
+import IngredientCard from "../features/IngredientCard";
+import ConsumableCard from "../features/ConsumableCard";
 
 export default function GroceryList() {
   const {
@@ -86,9 +42,9 @@ export default function GroceryList() {
       getCategory={(item) => item.category}
       renderItem={(item) =>
         item.type === "ingredient" ? (
-          <IngredientButton key={`ingredient-${item.id}`} item={item} />
+          <IngredientCard key={`ingredient-${item.id}`} ingredient={item} />
         ) : (
-          <ConsumableButton key={`consumable-${item.id}`} item={item} />
+          <ConsumableCard key={`consumable-${item.id}`} consumable={item} />
         )
       }
     />
