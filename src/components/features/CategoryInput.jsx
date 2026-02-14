@@ -1,8 +1,8 @@
-import { useCategories } from "../../state";
+import { useIngredientsCategories } from "../../state";
 import Dropdown from "../common/Dropdown";
 
 export default function CategoryInput({ value, onChange }) {
-  const { data: categories = [] } = useCategories();
+  const { data: categories = [] } = useIngredientsCategories();
 
   return (
     <Dropdown

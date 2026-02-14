@@ -23,7 +23,7 @@ export function useIngredient(id) {
   });
 }
 
-export function useCategories() {
+export function useIngredientsCategories() {
   return useQuery({
     queryKey: ["categories"],
     queryFn: api.getCategories,
