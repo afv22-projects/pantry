@@ -1,10 +1,5 @@
 import { useParams, useNavigate, Link } from "react-router-dom";
-import {
-  useRecipe,
-  useRecipeActions,
-  useIngredients,
-  useToggleNeeded,
-} from "../../state/index.js";
+import { useRecipe, useRecipeActions } from "../../state/index.js";
 import RecipeEditor from "../features/RecipeEditor.jsx";
 import { Button, BackLink, Loading } from "../common/index.jsx";
 
@@ -18,9 +13,7 @@ export default function RecipeDetail() {
   const navigate = useNavigate();
 
   const { data: recipe, isLoading: recipeLoading } = useRecipe(id);
-  const { data: allIngredients } = useIngredients();
   const recipeActions = useRecipeActions(id);
-  const toggleNeeded = useToggleNeeded();
 
   if (recipeLoading) return <Loading />;
 
@@ -66,11 +59,6 @@ export default function RecipeDetail() {
     }
   };
 
-  const handleToggleNeeded = (ingredientId) => {
-    const ingredient = allIngredients?.find((i) => i.id === ingredientId);
-    if (ingredient) toggleNeeded.mutate(ingredient);
-  };
-
   const handleDelete = () => {
     if (window.confirm("delete this recipe?")) {
       navigate("/recipes");
@@ -94,14 +82,13 @@ export default function RecipeDetail() {
         onNotesChange={handleNotesChange}
         ingredients={ingredients}
         onIngredientsChange={handleIngredientsChange}
-        onIngredientToggleNeeded={handleToggleNeeded}
         sources={sources}
         tags={tags}
         onAddSource={recipeActions.addSource.mutate}
         onRemoveSource={recipeActions.removeSource.mutate}
         onAddTag={recipeActions.addTag.mutate}
         onRemoveTag={recipeActions.removeTag.mutate}
-        showNeededIndicator={true}
+        mode="live"
       />
 
       <Button variant="danger" onClick={handleDelete}>

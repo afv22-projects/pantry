@@ -11,19 +11,15 @@ export default function RecipeTagInput({ onAdd }) {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const trimmed = value.trim();
-    if (trimmed) {
-      onAdd(trimmed);
-      setValue("");
-      setIsEditing(false);
-    }
-  };
-
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      handleSubmit(e);
+      e.preventDefault();
+      const trimmed = value.trim();
+      if (trimmed) {
+        onAdd(trimmed);
+        setValue("");
+        setIsEditing(false);
+      }
     } else if (e.key === "Escape") {
       setValue("");
       setIsEditing(false);
@@ -50,17 +46,15 @@ export default function RecipeTagInput({ onAdd }) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        onKeyDown={handleKeyDown}
-        onBlur={handleBlur}
-        placeholder="+ add tag"
-        className={styles.input}
-        autoFocus
-      />
-    </form>
+    <input
+      type="text"
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      onKeyDown={handleKeyDown}
+      onBlur={handleBlur}
+      placeholder="+ add tag"
+      className={styles.input}
+      autoFocus
+    />
   );
 }

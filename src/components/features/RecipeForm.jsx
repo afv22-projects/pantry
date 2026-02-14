@@ -57,9 +57,7 @@ export default function RecipeForm({ onClose }) {
           }
           onAddTag={(tag) => setTags([...tags, tag])}
           onRemoveTag={(index) => setTags(tags.filter((_, i) => i !== index))}
-          showNeededIndicator={false}
-          namePlaceholder="recipe name"
-          isCreateMode={true}
+          mode="local"
         />
 
         <div className={styles.buttonGrid}>

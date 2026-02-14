@@ -4,7 +4,6 @@ import {
   optimisticEntityUpdate,
   optimisticDelete,
   optimisticCreate,
-  optimisticListUpdate,
 } from "./queryUtils.jsx";
 
 export function useIngredients() {
@@ -100,26 +99,3 @@ export function useIngredientActions(id) {
   };
 }
 
-// --- BACKWARD COMPATIBILITY ---
-// These hooks are kept for backward compatibility with existing code.
-// New code should use useIngredientActions(id) instead.
-
-export function useToggleNeeded() {
-  const qc = useQueryClient();
-
-  return useMutation({
-    mutationFn: (ingredient) =>
-      api.updateIngredient({ id: ingredient.id, needed: !ingredient.needed }),
-    onMutate: async (ingredient) =>
-      optimisticListUpdate(qc, ["ingredients"], ingredient.id, (old) => ({
-        ...old,
-        needed: !old.needed,
-      })),
-    onError: (_err, _vars, ctx) => ctx?.rollback(),
-    onSettled: () => {
-      qc.invalidateQueries({ queryKey: ["ingredients"] });
-      // Also invalidate recipes since they embed ingredient data (including needed status)
-      qc.invalidateQueries({ queryKey: ["recipes"] });
-    },
-  });
-}
