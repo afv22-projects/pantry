@@ -33,10 +33,7 @@ export default function IngredientForm({ isOpen, onClose }) {
         needed: false,
       },
       {
-        onSuccess: (ingredient) => {
-          navigate(`/ingredients/${ingredient.id}`);
-          onClose();
-        },
+        onSuccess: () => onClose(),
         onError: (error) => {
           console.error("Failed to create ingredient:", error);
           alert(`Failed to create ingredient: ${error.message}`);

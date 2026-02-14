@@ -31,9 +31,7 @@ export default function ConsumableForm({ isOpen, onClose }) {
         needed: false,
       },
       {
-        onSuccess: () => {
-          onClose();
-        },
+        onSuccess: () => onClose(),
         onError: (error) => {
           console.error("Failed to create consumable:", error);
           alert(`Failed to create consumable: ${error.message}`);

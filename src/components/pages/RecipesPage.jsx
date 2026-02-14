@@ -14,6 +14,15 @@ const styles = {
   loading: "text-muted font-mono",
 };
 
+function TagPill({ value, isSelected, onSelect }) {
+  const className = `${styles.tagPill} ${isSelected ? styles.tagPillActive : styles.tagPillInactive}`;
+  return (
+    <button className={className} onClick={onSelect}>
+      {value}
+    </button>
+  );
+}
+
 export default function RecipesPage() {
   const { data: recipes, isLoading, isError } = useRecipes();
   const [showForm, setShowForm] = useState(false);
@@ -41,20 +50,18 @@ export default function RecipesPage() {
     <>
       {allTags.length > 0 && (
         <div className={styles.tagFilter}>
-          <button
-            className={`${styles.tagPill} ${!selectedTag ? styles.tagPillActive : styles.tagPillInactive}`}
-            onClick={() => setSelectedTag(null)}
-          >
-            all
-          </button>
+          <TagPill
+            value={all}
+            isSelected={!selectedTag}
+            onSelect={() => setSelectedTag(null)}
+          />
           {allTags.map((tag) => (
-            <button
+            <TagPill
               key={tag}
-              className={`${styles.tagPill} ${selectedTag === tag ? styles.tagPillActive : styles.tagPillInactive}`}
-              onClick={() => setSelectedTag(tag)}
-            >
-              {tag}
-            </button>
+              value={tag}
+              isSelected={selectedTag === tag}
+              onSelect={() => setSelectedTag(tag)}
+            />
           ))}
         </div>
       )}
