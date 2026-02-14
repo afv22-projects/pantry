@@ -1,47 +1,8 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { useConsumables, useConsumableActions } from "../../state";
-import { Button, Card, GroupedList, Loading, ErrorMessage } from "../common";
-import { CheckmarkIcon } from "../icons";
+import { useConsumables } from "../../state";
+import { Button, GroupedList, Loading, ErrorMessage } from "../common";
 import ConsumableForm from "../features/ConsumableForm.jsx";
-
-const styles = {
-  loading: "text-muted font-mono",
-  error: "text-red-500 font-mono",
-  cardContainer: "flex items-center gap-4",
-  itemContent: "flex items-center gap-3",
-  itemName: "text-text lowercase",
-};
-
-function ConsumableCard({ consumable }) {
-  const consumableActions = useConsumableActions(consumable.id);
-
-  const handleToggleNeeded = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    consumableActions.toggleNeeded.mutate();
-  };
-
-  return (
-    <Card
-      key={consumable.id}
-      as={Link}
-      to={`/consumables/${consumable.id}`}
-      className={styles.cardContainer}
-    >
-      <div className={styles.itemContent}>
-        <Button
-          variant="checkbox"
-          active={consumable.needed}
-          onClick={handleToggleNeeded}
-        >
-          {consumable.needed && <CheckmarkIcon />}
-        </Button>
-        <span className={styles.itemName}>{consumable.name}</span>
-      </div>
-    </Card>
-  );
-}
+import ConsumableCard from "../features/ConsumableCard.jsx";
 
 export default function ConsumablesList() {
   const { data: consumables, isLoading, isError } = useConsumables();

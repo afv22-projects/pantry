@@ -3,7 +3,7 @@ import { StateProvider } from "./state/index.js";
 import TabBar from "./components/features/TabBar.jsx";
 import RecipesPage from "./components/pages/RecipesPage.jsx";
 import RecipeDetail from "./components/pages/RecipeDetail.jsx";
-import IngredientList from "./components/pages/IngredientList.jsx";
+import IngredientsList from "./components/pages/IngredientsList.jsx";
 import IngredientDetail from "./components/pages/IngredientDetail.jsx";
 import ConsumablesList from "./components/pages/ConsumablesList.jsx";
 import ConsumableDetail from "./components/pages/ConsumableDetail.jsx";
@@ -37,7 +37,7 @@ function AppContent() {
             <Route path="/" element={<Navigate to="/recipes" replace />} />
             <Route path="/recipes" element={<RecipesPage />} />
             <Route path="/recipes/:id" element={<RecipeDetail />} />
-            <Route path="/ingredients" element={<IngredientList />} />
+            <Route path="/ingredients" element={<IngredientsList />} />
             <Route path="/ingredients/:id" element={<IngredientDetail />} />
             <Route path="/consumables" element={<ConsumablesList />} />
             <Route path="/consumables/:id" element={<ConsumableDetail />} />

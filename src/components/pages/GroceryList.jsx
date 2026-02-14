@@ -32,7 +32,7 @@ export default function GroceryList() {
     isLoading: consumablesLoading,
     isError: consumablesError,
   } = useConsumables();
-  const toggleNeeded = useToggleNeeded();
+  const toggleIngredientNeeded = useToggleNeeded();
   const toggleConsumableNeeded = useToggleConsumableNeeded();
 
   const neededItems = useMemo(() => {
@@ -64,7 +64,7 @@ export default function GroceryList() {
 
   const handleToggle = (item) => {
     if (item.type === "ingredient") {
-      toggleNeeded.mutate(item);
+      toggleIngredientNeeded.mutate(item);
     } else {
       toggleConsumableNeeded.mutate(item);
     }
