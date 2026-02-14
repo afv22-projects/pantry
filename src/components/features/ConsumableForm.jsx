@@ -14,7 +14,7 @@ const styles = {
   submitButton: "flex-1",
 };
 
-export default function ConsumableForm({ onClose }) {
+export default function ConsumableForm({ isOpen, onClose }) {
   const createConsumable = useCreateConsumable();
 
   const [name, setName] = useState("");
@@ -43,7 +43,7 @@ export default function ConsumableForm({ onClose }) {
   };
 
   return (
-    <Modal title="new consumable" onClose={onClose}>
+    <Modal title="new consumable" isOpen={isOpen} onClose={onClose}>
       <form onSubmit={handleSubmit}>
         <div className={styles.nameContainer}>
           <label className={styles.nameTitle}>name</label>

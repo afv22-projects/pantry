@@ -15,7 +15,7 @@ const styles = {
   submitButton: "flex-1",
 };
 
-export default function IngredientForm({ onClose }) {
+export default function IngredientForm({ isOpen, onClose }) {
   const navigate = useNavigate();
   const createIngredient = useCreateIngredient();
 
@@ -46,7 +46,7 @@ export default function IngredientForm({ onClose }) {
   };
 
   return (
-    <Modal title="new ingredient" onClose={onClose}>
+    <Modal title="new ingredient" isOpen={isOpen} onClose={onClose}>
       <form onSubmit={handleSubmit}>
         <div className={styles.nameContainer}>
           <label className={styles.nameTitle}>name</label>

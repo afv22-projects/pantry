@@ -41,9 +41,7 @@ export default function ItemDetail({
   }
 
   const handleDelete = () => {
-    if (window.confirm(`delete this ${itemType}?`)) {
-      onDelete();
-    }
+    if (window.confirm(`delete this ${itemType}?`)) onDelete();
   };
 
   return (

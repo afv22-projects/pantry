@@ -9,7 +9,7 @@ const styles = {
   submitButton: "flex-1",
 };
 
-export default function RecipeForm({ onClose }) {
+export default function RecipeForm({ isOpen, onClose }) {
   const navigate = useNavigate();
   const createRecipe = useCreateRecipe();
 
@@ -40,7 +40,7 @@ export default function RecipeForm({ onClose }) {
   };
 
   return (
-    <Modal title="new recipe" onClose={onClose}>
+    <Modal title="new recipe" isOpen={isOpen} onClose={onClose}>
       <form onSubmit={handleSubmit}>
         <RecipeEditor
           name={name}

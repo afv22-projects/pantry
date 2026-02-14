@@ -5,13 +5,15 @@ const styles = {
   title: "text-xl font-normal text-text mb-6 lowercase",
 };
 
-export default function Modal({ title, children, onClose }) {
+export default function Modal({ title, children, isOpen, onClose }) {
   return (
-    <div className={styles.background} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        {title && <h2 className={styles.title}>{title}</h2>}
-        {children}
+    isOpen && (
+      <div className={styles.background} onClick={onClose}>
+        <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+          {title && <h2 className={styles.title}>{title}</h2>}
+          {children}
+        </div>
       </div>
-    </div>
+    )
   );
 }

@@ -34,7 +34,7 @@ export default function IngredientsList() {
       <Button variant="fab" onClick={() => setShowForm(true)}>
         +
       </Button>
-      {showForm && <IngredientForm onClose={() => setShowForm(false)} />}
+      <IngredientForm isOpen={showForm} onClose={() => setShowForm(false)} />
     </>
   );
 }

@@ -29,7 +29,7 @@ export default function ConsumablesList() {
       <Button variant="fab" onClick={() => setShowForm(true)}>
         +
       </Button>
-      {showForm && <ConsumableForm onClose={() => setShowForm(false)} />}
+      <ConsumableForm isOpen={showForm} onClose={() => setShowForm(false)} />
     </>
   );
 }
