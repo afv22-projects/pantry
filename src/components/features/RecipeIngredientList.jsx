@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useIngredients } from "../../state/index.js";
-import ChipInput from "./ChipInput.jsx";
-import RecipeIngredientChip from "./RecipeIngredientChip.jsx";
+import ChipInput from "../common/ChipInput";
+import RecipeIngredientChip from "./RecipeIngredientChip";
 
 export default function RecipeIngredientList({ ingredients, onChange, mode }) {
   const { data: allIngredients } = useIngredients();

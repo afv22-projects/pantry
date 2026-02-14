@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useIngredient, useIngredientActions, useRecipes } from "../../state";
-import CategoryInput from "../features/CategoryInput";
+import IngredientCategoryInput from "../features/IngredientCategoryInput";
 import ItemDetail from "../features/ItemDetail";
 
 export default function IngredientDetail() {
@@ -38,7 +38,7 @@ export default function IngredientDetail() {
       isLoading={ingredientLoading || recipesLoading}
       backLink="/ingredients"
       categoryInput={
-        <CategoryInput
+        <IngredientCategoryInput
           value={ingredient?.category || ""}
           onChange={handleCategoryChange}
         />

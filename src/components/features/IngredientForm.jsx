@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCreateIngredient } from "../../state/index.js";
-import CategoryInput from "./CategoryInput.jsx";
+import IngredientCategoryInput from "./IngredientCategoryInput.jsx";
 import { Button, Modal } from "../common/index.jsx";
 
 const styles = {
@@ -62,7 +62,7 @@ export default function IngredientForm({ onClose }) {
 
         <div className={styles.categoryContainer}>
           <label className={styles.categoryTitle}>category</label>
-          <CategoryInput value={category} onChange={setCategory} />
+          <IngredientCategoryInput value={category} onChange={setCategory} />
         </div>
 
         <div className={styles.actionsContainer}>
