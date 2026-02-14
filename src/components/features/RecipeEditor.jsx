@@ -4,6 +4,8 @@ import ChipInput from "./ChipInput.jsx";
 import MarkdownEditor from "../common/MarkdownEditor.jsx";
 import RecipeSourceCard from "./RecipeSourceCard.jsx";
 import RecipeSourceInput from "./RecipeSourceInput.jsx";
+import RecipeTag from "./RecipeTag.jsx";
+import RecipeTagInput from "./RecipeTagInput.jsx";
 
 const styles = {
   nameContainer: "mb-6",
@@ -20,6 +22,9 @@ const styles = {
   sourceContainer: "mb-8",
   sourceTitle: "font-mono text-[11px] text-muted uppercase tracking-wider mb-3",
   sourceList: "space-y-3 mb-3",
+  tagContainer: "mb-8",
+  tagTitle: "font-mono text-[11px] text-muted uppercase tracking-wider mb-3",
+  tagList: "flex flex-wrap gap-2 mb-3",
 };
 
 export default function RecipeEditor({
@@ -121,6 +126,18 @@ export default function RecipeEditor({
         />
       </section>
 
+      {onAddTag && onRemoveTag && (
+        <section className={styles.tagContainer}>
+          {/* <h3 className={styles.tagTitle}>Tags</h3> */}
+          <div className={styles.tagList}>
+            {tags.map((tag, index) => (
+              <RecipeTag key={index} tag={tag} onRemove={onRemoveTag} />
+            ))}
+            <RecipeTagInput onAdd={onAddTag} />
+          </div>
+        </section>
+      )}
+
       <section className={styles.ingredientsContainer}>
         <h3 className={styles.ingredientsTitle}>Ingredients</h3>
         <ChipInput
@@ -163,24 +180,7 @@ export default function RecipeEditor({
         </section>
       )}
 
-      {onAddTag && onRemoveTag && (
-        <section className={styles.sourceContainer}>
-          <h3 className={styles.sourceTitle}>Tags</h3>
-          {tags.length > 0 && (
-            <div className={styles.sourceList}>
-              {tags.map((tag, index) => (
-                <RecipeSourceCard
-                  key={index}
-                  source={tag}
-                  index={index}
-                  onRemoveSource={onRemoveTag}
-                />
-              ))}
-            </div>
-          )}
-          <RecipeSourceInput onAddSource={onAddTag} />
-        </section>
-      )}
+      
     </>
   );
 }
