@@ -92,36 +92,3 @@ export function useConsumableActions(id) {
     }),
   };
 }
-
-// Can't migrate this yet due to ambiguous items in the Grocery List
-export function useToggleConsumableNeeded() {
-  const qc = useQueryClient();
-
-  return useMutation({
-    mutationFn: (consumable) =>
-      api.updateConsumable({ id: consumable.id, needed: !consumable.needed }),
-
-    onMutate: async (consumable) => {
-      await qc.cancelQueries({ queryKey: ["consumables"] });
-      const previous = qc.getQueryData(["consumables"]);
-
-      qc.setQueryData(["consumables"], (old) =>
-        old?.map((c) =>
-          c.id === consumable.id ? { ...c, needed: !c.needed } : c,
-        ),
-      );
-
-      return { previous };
-    },
-
-    onError: (_err, _item, context) => {
-      if (context?.previous) {
-        qc.setQueryData(["consumables"], context.previous);
-      }
-    },
-
-    onSettled: () => {
-      qc.invalidateQueries({ queryKey: ["consumables"] });
-    },
-  });
-}

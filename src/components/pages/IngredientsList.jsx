@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { useIngredients } from "../../state/index.js";
-import { Button, GroupedList, Loading, ErrorMessage } from "../common/index.jsx";
+import {
+  Button,
+  GroupedList,
+  Loading,
+  ErrorMessage,
+} from "../common/index.jsx";
 import IngredientForm from "../features/IngredientForm.jsx";
 import IngredientCard from "../features/IngredientCard.jsx";
 
@@ -17,7 +22,9 @@ export default function IngredientsList() {
         items={ingredients || []}
         getCategory={(ingredient) => ingredient.category}
         emptyMessage="no ingredients yet. add one below."
-        renderItem={(ingredient) => <IngredientCard ingredient={ingredient} />}
+        renderItem={(ingredient) => (
+          <IngredientCard key={ingredient.id} ingredient={ingredient} />
+        )}
       />
 
       <Button variant="fab" onClick={() => setShowForm(true)}>

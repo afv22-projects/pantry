@@ -17,7 +17,9 @@ export default function ConsumablesList() {
         items={consumables || []}
         getCategory={(consumable) => consumable.category}
         emptyMessage="no consumables yet. add one below."
-        renderItem={(consumable) => <ConsumableCard consumable={consumable} />}
+        renderItem={(consumable) => (
+          <ConsumableCard key={consumable.id} consumable={consumable} />
+        )}
       />
 
       <Button variant="fab" onClick={() => setShowForm(true)}>

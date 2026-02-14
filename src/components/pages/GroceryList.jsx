@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import {
   useIngredients,
-  useToggleNeeded,
+  useIngredientActions,
   useConsumables,
-  useToggleConsumableNeeded,
+  useConsumableActions,
 } from "../../state";
 import {
   Button,
@@ -21,6 +21,33 @@ const styles = {
   itemName: "text-text lowercase",
 };
 
+function ItemButton({ name, onToggle }) {
+  return (
+    <Card className={styles.cardContainer}>
+      <div className={styles.itemContent}>
+        <Button variant="checkbox" active={true} onClick={onToggle}>
+          <CheckmarkIcon />
+        </Button>
+        <span className={styles.itemName}>{name}</span>
+      </div>
+    </Card>
+  );
+}
+
+function IngredientButton({ item }) {
+  const ingredientActions = useIngredientActions(item.id);
+  const handleToggle = () => ingredientActions.toggleNeeded.mutate();
+
+  return <ItemButton name={item.name} onToggle={handleToggle} />;
+}
+
+function ConsumableButton({ item }) {
+  const consumableActions = useConsumableActions(item.id);
+  const handleToggle = () => consumableActions.toggleNeeded.mutate();
+
+  return <ItemButton name={item.name} onToggle={handleToggle} />;
+}
+
 export default function GroceryList() {
   const {
     data: ingredients,
@@ -32,21 +59,12 @@ export default function GroceryList() {
     isLoading: consumablesLoading,
     isError: consumablesError,
   } = useConsumables();
-  const toggleIngredientNeeded = useToggleNeeded();
-  const toggleConsumableNeeded = useToggleConsumableNeeded();
-
   const neededItems = useMemo(() => {
     const neededIngredients = (ingredients?.filter((i) => i.needed) || []).map(
-      (item) => ({
-        ...item,
-        type: "ingredient",
-      }),
+      (item) => ({ ...item, type: "ingredient" }),
     );
     const neededConsumables = (consumables?.filter((c) => c.needed) || []).map(
-      (item) => ({
-        ...item,
-        type: "consumable",
-      }),
+      (item) => ({ ...item, type: "consumable" }),
     );
     return [...neededIngredients, ...neededConsumables];
   }, [ingredients, consumables]);
@@ -62,35 +80,17 @@ export default function GroceryList() {
     return <EmptyState message={emptyMsg} centered />;
   }
 
-  const handleToggle = (item) => {
-    if (item.type === "ingredient") {
-      toggleIngredientNeeded.mutate(item);
-    } else {
-      toggleConsumableNeeded.mutate(item);
-    }
-  };
-
   return (
     <GroupedList
       items={neededItems}
       getCategory={(item) => item.category}
-      renderItem={(item) => (
-        <Card
-          key={`${item.type}-${item.id}`}
-          className={styles.cardContainer}
-        >
-          <div className={styles.itemContent}>
-            <Button
-              variant="checkbox"
-              active={true}
-              onClick={() => handleToggle(item)}
-            >
-              <CheckmarkIcon />
-            </Button>
-            <span className={styles.itemName}>{item.name}</span>
-          </div>
-        </Card>
-      )}
+      renderItem={(item) =>
+        item.type === "ingredient" ? (
+          <IngredientButton key={`ingredient-${item.id}`} item={item} />
+        ) : (
+          <ConsumableButton key={`consumable-${item.id}`} item={item} />
+        )
+      }
     />
   );
 }

@@ -22,7 +22,6 @@ export default function ConsumableCard({ consumable }) {
 
   return (
     <Card
-      key={consumable.id}
       as={Link}
       to={`/consumables/${consumable.id}`}
       className={styles.cardContainer}

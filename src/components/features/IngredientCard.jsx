@@ -19,7 +19,6 @@ export default function IngredientCard({ ingredient }) {
 
   return (
     <Card
-      key={ingredient.id}
       as={Link}
       to={`/ingredients/${ingredient.id}`}
       className={styles.card}
