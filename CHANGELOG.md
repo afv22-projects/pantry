@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.1](https://github.com/afv22-projects/pantry/compare/v1.5.0...v1.5.1) (2026-02-14)
+
+
+### Bug Fixes
+
+* item toggle was broken ([75a548a](https://github.com/afv22-projects/pantry/commit/75a548ad52e60db8b8e549423fdabf4b00516bf1))
+* remove link from grocery list cards ([2bae370](https://github.com/afv22-projects/pantry/commit/2bae37022ca9f24a5abf093a58a7a664bec73c6b))
+
 ## [1.5.0](https://github.com/afv22-projects/pantry/compare/v1.4.0...v1.5.0) (2026-02-14)
 
 
